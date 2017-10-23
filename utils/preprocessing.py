@@ -18,7 +18,7 @@ def convert_ts(ts):
     return formatted_date
 
 
-def parse_listen_type(data, drop_tmp=False):
+def parse_ts_listen(data, drop_tmp=False):
     """
     Parse the data "ts_listened" column and creates new columns
     Modifies the dataframe in-place
