@@ -56,3 +56,11 @@ def parse_release_date(data):
     data["year_release"] = data["release_date"] // 10000
     data["month_release"] = (data["release_date"] // 100) % 100
     data["day_release"] = data["release_date"] % 100
+
+if __name__ == "__main__":
+    path = "my/path/to/dataset"
+    # Load data
+    data = pd.read_csv(path)
+    # Transform the time columns
+    parse_listen_type(data)
+    parse_release_date(data)
