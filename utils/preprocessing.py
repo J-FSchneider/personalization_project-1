@@ -62,5 +62,5 @@ if __name__ == "__main__":
     # Load data
     data = pd.read_csv(path)
     # Transform the time columns
-    parse_listen_type(data)
+    parse_ts_listen(data)
     parse_release_date(data)
