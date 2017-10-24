@@ -79,7 +79,8 @@ def get_moment_of_day(ts_listen):
     }
 
     # Get the hour of listening
-    hour = convert_ts(ts_listen).hour
+    hour = datetime.datetime.strftime(convert_ts(ts_listen),
+                                      "%Y-%m-%d %H:%M:%S").hour
 
     # Get the corresponding moment
     moment = [k for (k, v) in MOMENTS.items() if v[0] <= hour <= v[1]][0]
