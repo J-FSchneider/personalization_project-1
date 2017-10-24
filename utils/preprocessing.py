@@ -13,7 +13,7 @@ import datetime
 
 def convert_ts(ts):
     """
-    Convert timestamp to datetime
+    Convert timestamp to datetime.
     :param ts: int | timestamp in seconds since 1st of January 1970
     :return:
     """
