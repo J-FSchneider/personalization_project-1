@@ -1,4 +1,7 @@
+import copy
+import pandas as pd
 from utils.preprocessing import parse_release_date, parse_ts_listen
+
 
 class CleanTransformer():
     """
@@ -13,8 +16,8 @@ class CleanTransformer():
 
     def fit(self, data):
         self.fitted = True
-        self.data = data
-        self.columns = data.columns
+        self.data = copy.copy(data)
+        self.columns = self.data.columns
 
     def transform(self):
         self.transformed = True
@@ -46,6 +49,10 @@ class CleanTransformer():
         self.data = self.data[(1 <= self.data["day_release"]) &
                               (self.data["day_release"] <= 31)]
 
+    def clean_media_duration(self):
+        # TODO: change threshold if needed
+        self.data = self.data[self.data["media_duration"] <= 700]
+
     def remove_outliers(self):
         # TODO: to implement
         pass
@@ -58,5 +65,4 @@ class CleanTransformer():
         return self.data
 
     def dump(self):
-        # TODO
-        pass
+        self.data.to_csv("cleaned_data.csv")
