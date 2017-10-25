@@ -4,10 +4,12 @@ The functions made below use the functions in the utils file. The data must cont
 these functions.
 
 """
-
+convert_ts(ts)
 parse_ts_listen(data)
 parse_release_date(data)
+get_moment_of_day(ts_listen)
 parse_moment_of_day(data)
+get_user_age_bucket(user_age)
 parse_user_age(data)
 
 
