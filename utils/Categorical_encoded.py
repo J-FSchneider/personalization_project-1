@@ -13,7 +13,7 @@ get_user_age_bucket(user_age)
 parse_user_age(data)
 
 
-def time_of_day_categorical(data):
+def time_of_day_encoded(data):
     """
     Converts the moment of day buckets to categorical varibales in different columns.
     Input: pandas DataFrame
@@ -24,20 +24,18 @@ def time_of_day_categorical(data):
    if "moment_of_day" not in data:
         raise IOError("The input dataframe does not contain "
                       "the column 'moment_of_day'")
-        
-    temp1 = pd.get_dummies(data.moment_of_day) # Making the dummy variable from the categorical 'moment_of_day'
+      #Making the dummy variable from the categorical 'moment_of_day'   
+    temp1 = pd.get_dummies(data.moment_of_day)
     
-    data = pd.concat([data,temp1],axis =1) # Joining the new dataset with the encoding to the original data
+      #Joining the new dataset with the encoding to the original data
+    data = pd.concat([data,temp1],axis =1) 
     
     del temp1
     
     return data
 
-data = time_of_day_categorical(data)  #Function Call
-del data['moment_of_day'] #Removing the 'moment_of_day' column
 
-
-def age_categorical(data):
+def age_bucket_encoded(data):
 
     """
     Converts the age buckets to categorical varibales in different columns.
@@ -51,25 +49,25 @@ def age_categorical(data):
         raise IOError("The input dataframe does not contain "
                       "the column 'user_age_bucket'")
         
-    temp = pd.get_dummies(data.user_age_bucket) #Making the dummy variable from the categorical 'user_age_bucket'
-    
-    data = pd.concat([data, temp],axis =1) ## Joining the new dataset with the encoding to the original data
+     #Making the dummy variable from the categorical 'user_age_bucket'   
+    temp = pd.get_dummies(data.user_age_bucket)
+    # Joining the new dataset with the encoding to the original data
+    data = pd.concat([data, temp],axis =1) 
     
     del temp
     
     return data
 
-
-data = age_categorical(data) #Function Call
-del data['user_age_bucket']  #removing the 'user_age_bucket' column
-
-
-
-
-
-
-
-
-
-
-
+def modified_data(data) :	
+    """
+    This function calls the functions mentioned above and stores the values in the dataset to 
+    output the new dataset with the encoded values. It also deletes the 'user_age_bucket' and 'moment_of_day' column 
+    as they are not required anymore
+    """
+  data = time_of_day_encoded(data) #storing new dataset
+  data = age_bucket_encoded(data) #storing new dataset
+  del data['user_age_bucket'] #removing the 'user_age_bucket' column
+  del data['moment_of_day'] #Removing the 'moment_of_day' column
+  
+  return data
+  
