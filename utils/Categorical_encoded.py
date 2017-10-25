@@ -1,17 +1,4 @@
-import utils 
-"""
-The functions made below use the functions in the utils file. The data must contain columns created by 
-these functions.
-
-"""
-convert_ts(ts)
-parse_ts_listen(data)
-parse_release_date(data)
-get_moment_of_day(ts_listen)
-parse_moment_of_day(data)
-get_user_age_bucket(user_age)
-parse_user_age(data)
-
+from utils.preprocessing import *
 
 def time_of_day_encoded(data):
     """
@@ -21,6 +8,8 @@ def time_of_day_encoded(data):
     existing Dataframe)
     
     """
+    parse_ts_listen(data) #Preprocess
+    parse_moment_of_day(data) #Preprocess
    if "moment_of_day" not in data:
         raise IOError("The input dataframe does not contain "
                       "the column 'moment_of_day'")
@@ -44,6 +33,7 @@ def age_bucket_encoded(data):
     existing Dataframe)
     
     """
+	parse_user_age(data) #preprocess
    
     if "user_age_bucket" not in data:
         raise IOError("The input dataframe does not contain "
@@ -60,9 +50,9 @@ def age_bucket_encoded(data):
 
 def modified_data(data) :	
     """
-    This function calls the functions mentioned above and stores the values in the dataset to 
-    output the new dataset with the encoded values. It also deletes the 'user_age_bucket' and 'moment_of_day' column 
-    as they are not required anymore
+    This function calls the functions mentioned above and stores the values in the dataset 
+    to output the new dataset with the encoded values. It also deletes the 
+    'user_age_bucket' and 'moment_of_day' column as they are not required anymore
     """
   data = time_of_day_encoded(data) #storing new dataset
   data = age_bucket_encoded(data) #storing new dataset
@@ -70,4 +60,3 @@ def modified_data(data) :
   del data['moment_of_day'] #Removing the 'moment_of_day' column
   
   return data
-  
