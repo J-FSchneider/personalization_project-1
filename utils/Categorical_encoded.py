@@ -1,3 +1,8 @@
+"""
+This file contains some functions one can use to convert the categorical variables to
+encoded variables.If functions copied outside this file, do not forget imports.
+"""
+
 from utils.preprocessing import *
 import pandas as pd
 
@@ -38,7 +43,6 @@ def user_encoded_data(data):
     :param data: pd.DataFrame
     :return: pd.DataFrame | input dataframe with additional columns
     """
-    # TODO: change docstring above to a standard one
     data = time_of_day_encoded(data) #storing new dataset
     data = age_bucket_encoded(data) #storing new dataset
     data = data.drop('user_age_bucket',1) # removing the 'user_age_bucket' column
@@ -49,7 +53,11 @@ def user_encoded_data(data):
 
 
 if __name__ == "__main__":
-      
+
+    path = "my/path/to/dataset"
+    # Load data
+    data = pd.read_csv(path)
+    #transform data
     time_of_day_encoded(data)
     age_bucket_encoded(data)
     user_encoded_data(data)
