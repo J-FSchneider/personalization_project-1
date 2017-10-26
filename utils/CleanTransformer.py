@@ -15,16 +15,31 @@ class CleanTransformer():
         self.transformed = False
 
     def fit(self, data):
+        """
+        Fits the instance to the dataframe data
+        :param data: pd.Dataframe | dataframe to clean and transform
+        :return: None
+        """
         self.fitted = True
         self.data = copy.copy(data)
         self.columns = self.data.columns
 
     def transform(self):
+        """
+        Transform the attribute data by adding new columns.
+        The method used are defined in the 'utils' module.
+        :return: None
+        """
         self.transformed = True
         parse_ts_listen(self.data, drop_tmp=True)
         parse_release_date(self.data)
 
     def fit_transform(self, data):
+        """
+        Apply the functions fit and transform one after the other
+        :param data: pd.Dataframe | dataframe to clean and transform
+        :return: self
+        """
         self.fit(data)
         self.transform()
         return self
@@ -64,5 +79,8 @@ class CleanTransformer():
         self.clean_release_date()
         return self.data
 
-    def dump(self):
-        self.data.to_csv("cleaned_data.csv")
+    def dump(self, path=None):
+        if path is None:
+            self.data.to_csv("cleaned_data.csv")
+        else:
+            self.data.to_csv(path)
