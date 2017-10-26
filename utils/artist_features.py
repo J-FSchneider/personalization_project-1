@@ -11,7 +11,7 @@ import pandas as pd
 # Below are the functions that create the popularity features for the artists
 
 
-def artist_pop(df, target, column):
+def artist_pop(df, target, agg_col):
     """
     This function constructs popularity metrics for the artist from
     the Deezer dataset.
@@ -26,32 +26,23 @@ def artist_pop(df, target, column):
     :param df: pd.DataFrame | DataFrame containing the columns
                               "target" and "column"
     :param target: str | The name of the identifier columns
-    :param column: The name of the column where the unique count
+    :param agg_col: The name of the column where the unique count
                    is gong to be perform
     :return master_table: pd.DataFrame | DataFrame at the artist level
                           that contains the popularity features
     """
-    # TODO: change name of parameter column as it can be confusing
 
-    if target not in df or column not in df:
+    if target not in df or agg_col not in df:
         raise IOError("One of the column names entered is not contained"
                       "in the dataframe.")
 
-    # TODO: Delete intermediary variables, unecessary
-    new_column1 = "row_pop"
-    criteria1 = "count"
-    var_agg = {target: criteria1}
-    row_pop = df.groupby(by=target).agg(var_agg)
-    row_pop.columns = [new_column1]
+    row_pop = df.groupby(by=target).agg({target: "count"})
+    row_pop.columns = ["row_pop"]
     row_pop = row_pop.reset_index()
-    master_table = row_pop.sort_values(new_column1, ascending=False)
+    master_table = row_pop.sort_values("row_pop", ascending=False)
 
-    # TODO: Delete intermediary variables, unecessary
-    new_column2 = "user_pop"
-    criteria2 = "nunique"
-    var_agg = {column: criteria2}
-    user_pop = df.groupby(by=target).agg(var_agg)
-    user_pop.columns = [new_column2]
+    user_pop = df.groupby(by=target).agg({agg_col: "nunique"})
+    user_pop.columns = ["user_pop"]
     user_pop = user_pop.reset_index()
 
     master_table = pd.DataFrame.merge(master_table, user_pop, on=target,
@@ -59,7 +50,7 @@ def artist_pop(df, target, column):
     return master_table
 
 
-def popularity_cat(df, target, column):
+def popularity_cat(df, target, thres_col):
     """
     This function generates the categorical columns for the artist's
     popularity features by first generating categories based on certain
@@ -68,91 +59,63 @@ def popularity_cat(df, target, column):
     :param df: pd.DataFrame | DataFrame containing the columns
                               "target" and "column"
     :param target: str | The name of the identifier columns
-    :param column: str | The name of the column where the threshold
+    :param thres_col: str | The name of the column where the threshold
                          is going to be applied
     :return df: pd.DataFrame | DataFrame with the artist's identifier
                                and the category columns
     """
-    # TODO: change name of parameter column as it can be confusing
-
-    if target not in df or column not in df:
+    if target not in df or thres_col not in df:
         raise IOError("One of the column names entered is not contained"
                       "in the dataframe.")
 
-    # TODO: Delete intermediary variables, unecessary
-    n = len(df)
-    cat1 = "unpop"
-    cat2 = "known"
-    cat3 = "pop"
-    pos = df.columns.get_loc(column)
-    threshold1 = 15
-    threshold2 = 157
-    cat_column = "artist"
-    df[cat_column] = cat1
-    cat_pos = df.columns.get_loc(cat_column)
-    # TODO: .iloc is very inefficient, and no need to use for loop, instead use pandas' slicing functions
-    """
-    for i in range(n):
-        if df.iloc[i, pos] > threshold2:
-            df.iloc[i, cat_pos] = cat3
-        elif (df.iloc[i, pos] > threshold1) & (df.iloc[i, pos] <= threshold2):
-            df.iloc[i, cat_pos] = cat2
-    """
+    df["artists"] = "unpop"
     # pop artists
-    df.loc[df[column] > threshold1, cat_column] = cat2
+    df.loc[df[thres_col] > 15, "artist"] = "known"
     # know artists
-    df.loc[df[column] > threshold2, cat_column] = cat3
+    df.loc[df[thres_col] > 157, "artist"] = "pop"
 
-    # TODO: remove unecessary temp variables, just makes more lines to read
-    column_selection = [target, cat_column]
-    df = df[column_selection]
+    df = df[[target, "artist"]]
     df = pd.get_dummies(df)
 
     return df
 
 
-def art_hits(df, target, column, threshold=0.75):
+def art_hits(df, target, filt_col, threshold=0.75):
     """
     This function calculates the number of  songs that generate a certain
     percentage of the total number of songs that the artist was played upon.
 
-    :param df: Deezer's database in the DataFrame format
-    :param target: the name of the identifier columns
-    :param column: the name of the column where filtering is going to take place
-    :param threshold: is the percentage of interest
-    :return result: a DataFrame which contains the artist's id and the no. of songs that
-    pass the threshold
+    :param df: pd.DataFrame |  Deezer's database in the DataFrame format
+    :param target: str | the name of the identifier columns
+    :param filt_col: str | the name of the column where
+                           filtering is going to take place
+    :param threshold: double | is the percentage of interest
+    :return result: pd.DataFrame |  a DataFrame which contains
+                                    the artist's id and the no. of songs that
+                                    pass the threshold
     """
-    # TODO: take into consideration the previous comments for this function too
-    criteria1 = "count"
-    criteria2 = "sum"
-    new_col = "song_count"
-    var_agg = {column: criteria1}
-    hits = df.groupby(by=[target, column]).agg(var_agg)
-    hits.columns = [new_col]
+    hits = df.groupby(by=[target, filt_col]).agg({filt_col: "count"})
+    hits.columns = ["song_count"]
     hits = hits.reset_index()
-    hits = hits.sort_values([target, new_col], ascending=[1, 0])
+    hits = hits.sort_values([target, "song_count"], ascending=[1, 0])
 
-    var_agg = {new_col: criteria2}
-    total = hits.groupby(by=target).agg(var_agg)
-    total_col = "tot_count"
-    total.columns = [total_col]
+    total = hits.groupby(by=target).agg({"song_count":"sum"})
+    total.columns = ["tot_count"]
     total = total.reset_index()
 
     hits = hits.merge(total, on=target, how="left")
-    per_col = "per_tot"
-    hits[per_col] = hits[new_col] / hits[total_col]
+    hits["per_tot"] = hits["song_count"] / hits["tot_count"]
 
     n = len(hits)
     id_pos = hits.columns.get_loc(target)
-    acc_col = "cul_tot"
-    flag_col = "flag"
-    hits[acc_col] = hits[per_col]
-    acc_pos = hits.columns.get_loc(acc_col)
-    per_pos = hits.columns.get_loc(per_col)
-    hits[flag_col] = 1
-    flag_pos = hits.columns.get_loc(flag_col)
+    hits["cul_tot"] = hits["per_tot"]
+    acc_pos = hits.columns.get_loc("cul_tot")
+    per_pos = hits.columns.get_loc("per_tot")
+    hits["flag"] = 1
+    flag_pos = hits.columns.get_loc("flag")
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     # TODO: as in previous functions, get rid of .iloc
+    # Need help here, no idea how to do this without .iloc... open for suggestions
     for i in range(1, n, 1):
         if hits.iloc[i, id_pos] == hits.iloc[i - 1, id_pos]:
             hits.iloc[i, acc_pos] = hits.iloc[i - 1, acc_pos] \
@@ -163,10 +126,8 @@ def art_hits(df, target, column, threshold=0.75):
             if (hits.iloc[j, acc_pos] > threshold) & (hits.iloc[j, acc_pos] < 1):
                 hits.iloc[j + 1, flag_pos] = 0
 
-    criteria = "sum"
-    column = "flag"
-    var_agg = {column: criteria}
-    result = hits.groupby(by=target).agg(var_agg)
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    result = hits.groupby(by=target).agg({"flag": "sum"})
     result.columns = ["no_songs"]
     result = result.reset_index()
 
@@ -178,34 +139,27 @@ def hits_cat(df, target):
     This function generates the categorical columns for the artist's "hits" features
     by first generating categories based on certain thresholds and then pivoting
     them into new columns
-    :param df: Dreezer's database in the DataFrame format
-    :param target: the name of the identifier columns
-    :return df:a DataFrame with the artist's identifier and the hits category columns
+    :param df: pd.DataFrame | Dreezer's database in the DataFrame format
+    :param target: str |  the name of the identifier columns
+    :return df: pd.DataFrame | a DataFrame with the artist's identifier
+                               and the hits category columns
     """
-    # TODO: take into consideration the previous comments for this function too
-    column = "no_songs"
-    n = len(df)
-    cat1 = "one"
-    cat2 = "medium"
-    cat3 = "many"
-    pos = df.columns.get_loc(column)
-    threshold1 = 3
-    threshold2 = 15
-    cat_column = "hits"
-    df[cat_column] = cat1
-    cat_pos = df.columns.get_loc(cat_column)
-    # TODO: same here
-    for i in range(n):
-        if df.iloc[i, pos] > threshold2:
-            df.iloc[i, cat_pos] = cat3
-        elif (df.iloc[i, pos] > threshold1) & (df.iloc[i, pos] <= threshold2):
-            df.iloc[i, cat_pos] = cat2
+    if target not in df:
+        raise IOError("One of the column names entered is not contained"
+                      "in the dataframe.")
+    df["hits"] = "one"
+    df.loc[df["no_songs"] > 3, "hits"] = "medium"
+    df.loc[df["no_songs"] > 15, "hits"] = "many"
 
-    column_selection = [target, cat_column]
-    df = df[column_selection]
+    df = df[[target, "hits"]]
     df = pd.get_dummies(df)
 
     return df
 
+
 if __name__ == "__main__":
-    #TODO: show how these functions can be used to generate the desired df
+    df = pd.read_csv("train.csv", nrow=1000)
+    pop_df = artist_pop(df, "artist_id", "user_id")
+    pop_cat_df = popularity_cat(df, "artist_id", "row_pop")
+    hits_df = art_hits(df, "artist_id", "media_id")
+    hits_cat_df = hits_cat(df, "artist_id")
