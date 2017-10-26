@@ -68,7 +68,7 @@ def popularity_cat(df, target, thres_col):
         raise IOError("One of the column names entered is not contained"
                       "in the dataframe.")
 
-    df["artists"] = "unpop"
+    df["artist"] = "unpop"
     # pop artists
     df.loc[df[thres_col] > 15, "artist"] = "known"
     # know artists
@@ -99,11 +99,12 @@ def art_hits(df, target, filt_col, threshold=0.75):
     hits = hits.reset_index()
     hits = hits.sort_values([target, "song_count"], ascending=[1, 0])
 
-    total = hits.groupby(by=target).agg({"song_count":"sum"})
+    total = hits.groupby(by=target).agg({"song_count": "sum"})
     total.columns = ["tot_count"]
     total = total.reset_index()
 
     hits = hits.merge(total, on=target, how="left")
+    # TODO: issue when python 2.x divide two integers, but for python 3.x OK
     hits["per_tot"] = hits["song_count"] / hits["tot_count"]
 
     n = len(hits)
