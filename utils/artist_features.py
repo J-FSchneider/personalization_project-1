@@ -5,7 +5,7 @@
 """
 
 # Import Packages
-# import numpy as np
+import numpy as np
 import pandas as pd
 
 # Below are the functions that create the popularity features for the artists
@@ -94,45 +94,43 @@ def art_hits(df, target, filt_col, threshold=0.75):
                                     the artist's id and the no. of songs that
                                     pass the threshold
     """
+    # This dataframe contains the count of songs listened to for each artist
     hits = df.groupby(by=[target, filt_col]).agg({filt_col: "count"})
     hits.columns = ["song_count"]
+    # Drop media_id level, we do not need it anymore
+    hits.index = hits.index.droplevel(1)
     hits = hits.reset_index()
-    hits = hits.sort_values([target, "song_count"], ascending=[1, 0])
+    # Sort values in descending order
+    hits = hits.sort_values("song_count", ascending=False)
 
+    # Get for each artist the total number of songs listened to
     total = hits.groupby(by=target).agg({"song_count": "sum"})
     total.columns = ["tot_count"]
     total = total.reset_index()
 
+    # Merge hits and total
     hits = hits.merge(total, on=target, how="left")
-    # TODO: issue when python 2.x divide two integers, but for python 3.x OK
+
+    # For each song get its percentage
     hits["per_tot"] = hits["song_count"] / hits["tot_count"]
 
-    n = len(hits)
-    id_pos = hits.columns.get_loc(target)
-    hits["cul_tot"] = hits["per_tot"]
-    acc_pos = hits.columns.get_loc("cul_tot")
-    per_pos = hits.columns.get_loc("per_tot")
-    hits["flag"] = 1
-    flag_pos = hits.columns.get_loc("flag")
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    # TODO: as in previous functions, get rid of .iloc
-    # Need help here, no idea how to do this without .iloc... open for suggestions
-    for i in range(1, n, 1):
-        if hits.iloc[i, id_pos] == hits.iloc[i - 1, id_pos]:
-            hits.iloc[i, acc_pos] = hits.iloc[i - 1, acc_pos] \
-                                    + hits.iloc[i, per_pos]
+    # Cumulative sum
+    hits["cum_sum"] = hits.groupby(target)["per_tot"].apply(np.cumsum)
 
-    for j in range(n - 1):
-        if hits.iloc[j, id_pos] == hits.iloc[j - 1, id_pos]:
-            if (hits.iloc[j, acc_pos] > threshold) & (hits.iloc[j, acc_pos] < 1):
-                hits.iloc[j + 1, flag_pos] = 0
+    # Get boolean array: True if cumulative percentage is less than threshold
+    hits["threshold"] = hits.groupby(target)["cum_sum"].apply(
+        lambda x: x < threshold)
 
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    result = hits.groupby(by=target).agg({"flag": "sum"})
-    result.columns = ["no_songs"]
-    result = result.reset_index()
+    d = {}
+    for group in hits.groupby(target).groups:
+        d[group] = np.sum(
+            hits.groupby(target).get_group(group)["threshold"]) + 1
 
-    return result
+    res = pd.DataFrame.from_dict(d, orient="index")
+    res = res.reset_index()
+    res.columns = ["artist_id", "no_songs"]
+
+    return res
 
 
 def hits_cat(df, target):
