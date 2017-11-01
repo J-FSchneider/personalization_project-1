@@ -3,9 +3,16 @@ import pandas as pd
 
 # TODO: should create a class for this model (Mohamed will take care of it)
 
-def squared_error_gradient(M,U,V,W=None):
-    # TODO: Add standard docstring
-    # calculates the gradient and error of the simple MSE Loss function (unregularized)
+def squared_error_gradient(M, U, V, W=None):
+    """ 
+    calculates the gradient and error of the simple MSE Loss function (unregularized)
+    :param M: np.array | Numpy array that contains the rating matrix
+    :param U: np.array | Numpy array that contains the user latent factors
+    :param: np.array | Numpy array that contains the item latent facotrs
+    :param: np.array | Numpy array that contains a weight matrix for the rating matrix (if bias is used)
+    :return:
+    """
+
     UV = np.dot(U,V)
     if W is None:
         E = np.subtract(M,UV)
@@ -65,7 +72,14 @@ def simple_latent_factor_model(M,
     return R_hat, U, V
 
 
-def latent_factors_with_bias(M,latent_factors=10, bias=None, bias_weights=None, regularization=0,learning_rate=0.000001):
+def latent_factors_with_bias(M,
+                            latent_factors=10, 
+                            bias=None, 
+                            bias_weights=None, 
+                            regularization=0,
+                            learning_rate=0.000001, 
+                            convergence_rate =0.9999
+                            ):
     # Calculates a latent factor model with give number of latent factors by gradient descent. 
     # Returns the ratings prediction matrix and the latent factor matrices U (users) and V (items)
 
@@ -101,7 +115,7 @@ def latent_factors_with_bias(M,latent_factors=10, bias=None, bias_weights=None, 
         print 'Loss on iteration ' + str(i) + ': ' + str(J)
         
         # Convergence criteria
-        if J/J1 > 0.9999:
+        if J/J1 > convergence_rate:
             convergence = True
         else:
             J1 = J
@@ -125,8 +139,7 @@ def test_accuracy(M, R_hat):
     accuracy = np.subtract(M, prediction).abs()
 
     # return accuracy value
-    # TODO: check unresolved reference here before
-    total_acc = accuracy.sum().sum()/matrix.count().sum()
+    total_acc = accuracy.sum().sum()/M.count().sum()
 
     return total_acc
 
