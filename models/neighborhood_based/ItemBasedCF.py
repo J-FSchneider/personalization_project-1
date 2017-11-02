@@ -81,6 +81,7 @@ class ItemBasedCF():
 
         # Checks if all ratings are NaN, then input the user mean rating
         # in the original rating matrix
+        # TODO: print warning
         if size == 0:
             return np.nanmean(self.data.loc[user])
 
