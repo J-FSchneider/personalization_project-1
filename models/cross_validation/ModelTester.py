@@ -3,7 +3,7 @@ import pandas as pd
 
 
 class ModelTester():
-    def __init__(self, ratios=(0.7, 0.2, 0.1), model_based=True):
+    def __init__(self, ratios=(0.7, 0.2, 0.1), model_based=True, seed=42):
         """
         Constructor of the class
         :param ratios: 3-tuple | ratios of train, validation and test sets
@@ -19,6 +19,9 @@ class ModelTester():
         self.train_set = {}
         self.non_null_indices = []
         self.data = None
+        self.seed = seed
+        # Set the seed for random generators
+        np.random.seed(self.seed)
 
     def fit(self, data):
         """
@@ -172,3 +175,7 @@ class ModelTester():
         loss = loss_func(predictions, self.train_set)
 
         return loss 
+
+    def shuffle_cv(self):
+
+        pass
