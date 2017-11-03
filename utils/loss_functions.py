@@ -36,14 +36,12 @@ def precision(prediction, test_set, threshhold=0.5):
     :param threshhold: Probability threshhold for prediction
     :return: value of Precision
     """
-    prediction1 = {}
-    prediction1 = prediction
+    prediction1 = dict(prediction)
     for j in prediction1.keys():
         if prediction1[j] >= threshhold:
             prediction1[j] = 1
         else:
-            prediction[j] = 0
-    prec = 0
+            prediction1[j] = 0
     tp = 0
     p = 0
     for i in test_set.keys():
@@ -72,7 +70,6 @@ def recall(prediction, test_set, threshhold=0.5):
             prediction1[j] = 1
         else:
             prediction1[j] = 0
-    rec = 0.00
     tp = 0.00
     fn = 0.00
     for i in test_set.keys():
