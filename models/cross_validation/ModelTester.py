@@ -9,7 +9,11 @@ class ModelTester():
         :param ratios: 3-tuple | ratios of train, validation and test sets
         """
         # TODO: add some sanity checks on sum of ratios
+        # TODO: maybe add explicit parameter to select model based?
+        self.MODEL_BASED = True
         self.ratios = ratios
+        if len(self.ratios) == 2:
+            self.MODEL_BASED = False
         self.valid_set = {}
         self.test_set = {}
         self.train_set = {}
@@ -41,19 +45,24 @@ class ModelTester():
         shuffled = np.random.shuffle(self.non_null_indices)
 
         # Get the indices for validation and test sets
-        train_indices = shuffled[:int(len(self.non_null_indices) * train_ratio)]
         valid_indices = shuffled[int(len(self.non_null_indices) * train_ratio):
                                  int(len(self.non_null_indices) * (train_ratio + valid_ratio))]
         test_indices = shuffled[int(
             len(self.non_null_indices) * (train_ratio + valid_ratio)) + 1:]
 
         # Fills the attribute dictionaries
-        self.train_set = {(u, i): self.data.loc[u][i]
-                          for (u, i) in train_indices}
         self.valid_set = {(u, i): self.data.loc[u][i]
                           for (u, i) in valid_indices}
         self.test_set = {(u, i): self.data.loc[u][i]
                          for (u, i) in test_indices}
+
+        if self.MODEL_BASED:
+            # Unnecessary work for neighborhood based models as it does not use
+            # validation set, only needs train and test
+            train_indices = shuffled[
+                            :int(len(self.non_null_indices) * train_ratio)]
+            self.train_set = {(u, i): self.data.loc[u][i]
+                              for (u, i) in train_indices}
 
         # Replace original values in DataFrame data by np.nan values
         for u, i in self.valid_set:
@@ -141,6 +150,10 @@ class ModelTester():
         :param loss_func: func | loss function to use
         :return: float | loss value on the train set
         """
+        if not self.MODEL_BASED:
+            # TODO: improve error message
+            raise ValueError("You cannot use this function as you need this "
+                             "method. Only for model based.")
         # Transform prediction df into dictionary
         if isinstance(predictions, pd.DataFrame):
             non_null_indices_pred = list(predictions[predictions.notnull()]
