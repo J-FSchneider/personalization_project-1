@@ -20,5 +20,14 @@ def ochiai(array_i, array_j):
 
 
 def cosine(array_i, array_j):
-    # TODO: implement
-    pass
+    """
+    Cosine Similarity calculator
+    :param array_i: np.array | array containing input
+    :param array_j: np.array | array containing input
+    :return: Cosine Similarity between input arrays
+    """
+    a = np.nansum(array_i * array_j)
+    b = np.sqrt(np.nansum(array_i**2))
+    c = np.sqrt(np.nansum(array_j**2))
+    cos_sim = a / (b * c)
+    return cos_sim
