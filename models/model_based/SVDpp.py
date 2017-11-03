@@ -3,8 +3,6 @@
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # import numpy as np
 import pandas as pd
-# from data_prep import hit_rate
-# from data_prep import song_rank
 from surprise import SVDpp
 from surprise import Dataset
 from surprise import Reader
@@ -22,7 +20,7 @@ class SurSVDpp:
             raise IOError("Parameter k should be a positive integer.")
         self.algo = SVDpp()
         self.data = None
-        self.predict = pd.DataFrame()
+        self.predictions = pd.DataFrame()
         self.k = k
 
     def fit(self, rating_matrix):
@@ -55,9 +53,9 @@ class SurSVDpp:
             ratings.append(r_ui)
 
         dataframe["itemID"] = items
-        dataframe["rating"] = ratings
+        dataframe["ratings"] = ratings
         dataframe["userID"] = users
-        self.predict = dataframe
+        self.predictions = dataframe
 
     def predict(self, user, item):
         """
@@ -66,5 +64,10 @@ class SurSVDpp:
         :param item: int | item ID
         :return: float | probability that user likes item
         """
-        proba = self.predict.iloc[user, item]
+        cond1 = self.predictions["userID"] == user
+        cond2 = self.predictions["itemID"] == item
+        mask = (cond1) & (cond2)
+        proba = float(self.predictions.loc[mask, "ratings"])
         return proba
+
+# =========================================================================
