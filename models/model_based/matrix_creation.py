@@ -25,7 +25,7 @@ def binary_matrix_popular_items(data):
     # filter users with less than 10 ratings in items
     m = matrix.count(axis=1) > 10
     matrix = matrix[matrix.index.isin(m[m==True].index)]
-    matrix = matrix.applymap(round)
+    matrix = matrix.applymap(lambda x: x if np.isnan(x) else round(x))
     
     return matrix
 
@@ -56,7 +56,7 @@ def binary_matrix_50_50(data):
     m = matrix.count(axis=1) > 10
     matrix = matrix[matrix.index.isin(m[m==True].index)]
     # Round the values to avoid media = 0.5
-    matrix = matrix.applymap(round)
+    matrix = matrix.applymap(lambda x: x if np.isnan(x) else round(x))
     
     return matrix
 
