@@ -186,3 +186,9 @@ class ModelTester():
         new_valid_indices = merged_shuffled_keys[int(len(merged) * ratio) + 1:]
         self.train_set = {t: merged[t] for t in new_train_indices}
         self.valid_set = {t: merged[t] for t in new_valid_indices}
+        # Create the new self.data rating dataframe
+        temp = pd.Series(self.train_set).reset_index()
+        temp.columns = ["user_id", "media_id", "rating"]
+        self.data = temp.pivot(index="user_id",
+                               columns="media_id",
+                               values="rating")
