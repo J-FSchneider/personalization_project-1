@@ -69,7 +69,7 @@ class ItemBasedCF():
         # Get rating for item "item"
         weighted_ratings = 0
         sum_abs_coeff = 0
-        size = 0
+        size = len(item_rating)
 
         for coeff, rating in item_rating:
             if np.isnan(rating):
@@ -81,8 +81,9 @@ class ItemBasedCF():
 
         # Checks if all ratings are NaN, then input the user mean rating
         # in the original rating matrix
-        # TODO: print warning
         if size == 0:
+            print("User %i has not rated any of the neighbors of item  %i" %
+                  (user, item))
             return np.nanmean(self.data.loc[user])
 
         return weighted_ratings / sum_abs_coeff
