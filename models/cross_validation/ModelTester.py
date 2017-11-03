@@ -181,7 +181,7 @@ class ModelTester():
         tmp = list(merged.keys())
         merged_shuffled_keys = [tmp[i] for i in np.argsort(np.random.randn(len(merged)))]
         x, y = self.ratios[0], self.ratios[1]
-        ratio = x / x + y
+        ratio = x / (x + y)
         new_train_indices = merged_shuffled_keys[:int(len(merged) * ratio)]
         new_valid_indices = merged_shuffled_keys[int(len(merged) * ratio) + 1:]
         self.train_set = {t: merged[t] for t in new_train_indices}
