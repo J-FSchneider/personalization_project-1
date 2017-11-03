@@ -42,7 +42,7 @@ class ModelTester():
         train_ratio, valid_ratio, test_ratio = self.ratios
 
         # Shuffle the non_null_indices
-        shuffled = np.random.shuffle(self.non_null_indices)
+        shuffled = np.random.permutation(self.non_null_indices)
 
         # Get the indices for validation and test sets
         valid_indices = shuffled[int(len(self.non_null_indices) * train_ratio):
