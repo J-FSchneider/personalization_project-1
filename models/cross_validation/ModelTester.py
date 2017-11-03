@@ -1,7 +1,5 @@
 import numpy as np
-from loss_functions import mean_squared_error, absolute_mean_error
-
-
+import pandas as pd
 
 
 class ModelTester():
@@ -10,7 +8,7 @@ class ModelTester():
         Constructor of the class
         :param ratios: 3-tuple | ratios of train, validation and test sets
         """
-        # TODO: add some sanity checks
+        # TODO: add some sanity checks on sum of ratios
         self.ratios = ratios
         self.valid_set = {}
         self.test_set = {}
@@ -50,10 +48,12 @@ class ModelTester():
             len(self.non_null_indices) * (train_ratio + valid_ratio)) + 1:]
 
         # Fills the attribute dictionaries
-        self.train_set = {(u, i): self.data.loc[u][i] for (u, i) in train_indices}
-        self.valid_set = {(u, i): self.data.loc[u][i] for (u, i) in valid_indices}
-        self.test_set = {(u, i): self.data.loc[u][i] for (u, i) in test_indices}
-
+        self.train_set = {(u, i): self.data.loc[u][i]
+                          for (u, i) in train_indices}
+        self.valid_set = {(u, i): self.data.loc[u][i]
+                          for (u, i) in valid_indices}
+        self.test_set = {(u, i): self.data.loc[u][i]
+                         for (u, i) in test_indices}
 
         # Replace original values in DataFrame data by np.nan values
         for u, i in self.valid_set:
@@ -75,21 +75,22 @@ class ModelTester():
 
         print(">>> DONE")
 
-
     def evaluate_test(self, predictions, loss_func):
         """
         Loss function applied to predictions and to hidden test ratings
-        :param predictions: dict, df | dictionary, dataframe containing the predictions
-                                   of your model
+        :param predictions: dict or pd.DataFrame | dictionary or pd.DataFrame
+                                                   containing the predictions
+                                                   of your model
         :param loss_func: func | loss function to use
         :return: float | loss value on the test set
         """
-        # transform prediction df into dictionary
-        if type(data) == pd.core.frame.DataFrame:
-                non_null_indices = list(predictions[predictions.notnull()].stack().index)
-                pred = {(u, i): predictions.loc[u][i] for (u, i) in
-                          non_null_indices}
-                predictions = pred
+        # Transform prediction df into dictionary
+        if isinstance(predictions, pd.DataFrame):
+            non_null_indices_pred = list(predictions[predictions.notnull()]
+                                         .stack().index)
+            pred = {(u, i): predictions.loc[u][i]
+                    for (u, i) in non_null_indices_pred}
+            predictions = pred
 
         # Check that the predictions are here for all the (u, i) in test_set
         for key in self.test_set:
@@ -104,18 +105,20 @@ class ModelTester():
 
     def evaluate_valid(self, predictions, loss_func):
         """
-        Loss function applied to predictions and to hidden test ratings
-        :param predictions: dict, df | dictionary, dataframe containing the predictions
-                                   of your model
+        Loss function applied to predictions and hidden validation set ratings
+        :param predictions: dict or pd.DataFrame | dictionary or pd.DataFrame
+                                                   containing the predictions
+                                                   of your model
         :param loss_func: func | loss function to use
-        :return: float | loss value on the test set
+        :return: float | loss value on the validation set
         """
-        # transform prediction df into dictionary
-        if type(data) == pd.core.frame.DataFrame:
-                non_null_indices = list(predictions[predictions.notnull()].stack().index)
-                pred = {(u, i): predictions.loc[u][i] for (u, i) in
-                          non_null_indices}
-                predictions = pred
+        # Transform prediction df into dictionary
+        if isinstance(predictions, pd.DataFrame):
+            non_null_indices_pred = list(predictions[predictions.notnull()]
+                                         .stack().index)
+            pred = {(u, i): predictions.loc[u][i]
+                    for (u, i) in non_null_indices_pred}
+            predictions = pred
 
         # Check that the predictions are here for all the (u, i) in test_set
         for key in self.valid_set:
@@ -130,25 +133,28 @@ class ModelTester():
 
     def evaluate_train(self, predictions, loss_func):
         """
-        Loss function applied to predictions and to hidden test ratings
-        :param predictions: dict, df | dictionary, dataframe containing the predictions
-                                   of your model
+        Loss function applied to predictions and train ratings.
+        This function will be used by matrix factorization models only.
+        :param predictions: dict or pd.DataFrame | dictionary or pd.DataFrame
+                                                   containing the predictions
+                                                   of your model
         :param loss_func: func | loss function to use
-        :return: float | loss value on the test set
+        :return: float | loss value on the train set
         """
-        # transform prediction df into dictionary
-        if type(data) == pd.core.frame.DataFrame:
-                non_null_indices = list(predictions[predictions.notnull()].stack().index)
-                pred = {(u, i): predictions.loc[u][i] for (u, i) in
-                          non_null_indices}
-                predictions = pred
+        # Transform prediction df into dictionary
+        if isinstance(predictions, pd.DataFrame):
+            non_null_indices_pred = list(predictions[predictions.notnull()]
+                                         .stack().index)
+            pred = {(u, i): predictions.loc[u][i]
+                    for (u, i) in non_null_indices_pred}
+            predictions = pred
 
         # Check that the predictions are here for all the (u, i) in test_set    
-        for key in self.valid_set:
+        for key in self.train_set:
             if key not in predictions:
                 raise IOError("The predictions do not contain all "
                               "the (user, item) combinations of the "
-                              "validation set")
+                              "train set")
         # Calculate loss 
         loss = loss_func(predictions, self.train_set)
 
