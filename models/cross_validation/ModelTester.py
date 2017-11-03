@@ -3,17 +3,17 @@ import pandas as pd
 
 
 class ModelTester():
-    def __init__(self, ratios=(0.7, 0.2, 0.1)):
+    def __init__(self, ratios=(0.7, 0.2, 0.1), model_based=True):
         """
         Constructor of the class
         :param ratios: 3-tuple | ratios of train, validation and test sets
+        :param model_based: boolean | boolean to state if model based framework.
+                                      If False, it assume neighborhood base
+                                      model.
         """
         # TODO: add some sanity checks on sum of ratios
-        # TODO: maybe add explicit parameter to select model based?
-        self.MODEL_BASED = True
+        self.MODEL_BASED = model_based
         self.ratios = ratios
-        if len(self.ratios) == 2:
-            self.MODEL_BASED = False
         self.valid_set = {}
         self.test_set = {}
         self.train_set = {}
@@ -57,8 +57,8 @@ class ModelTester():
                          for (u, i) in test_indices}
 
         if self.MODEL_BASED:
-            # Unnecessary work for neighborhood based models as it does not use
-            # validation set, only needs train and test
+            # Unnecessary work for neighborhood based models as it does modify
+            # train set, only needs to evaluate test sets.
             train_indices = shuffled[
                             :int(len(self.non_null_indices) * train_ratio)]
             self.train_set = {(u, i): self.data.loc[u][i]
