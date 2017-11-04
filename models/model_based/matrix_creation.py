@@ -1,10 +1,11 @@
 import numpy as np
 import pandas as pd
-# TODO: unused imports to be deleted
+
 
 def binary_matrix_popular_items(data, users=None):
+
     """
-    :params data: df | this is the input data that should be sampeled
+    :params data: df | this is the input data that should be sampled
     
     returns a ratings matrix with the hit rates of the 100 most popular items
     """
@@ -20,11 +21,11 @@ def binary_matrix_popular_items(data, users=None):
     matrix = data[data['media_id'].isin(media)]
     
     # make pivot table
-    matrix = matrix.pivot_table(index='user_id', columns ='media_id',
-                                              values='is_listened',
-                                              aggfunc='median')
+    matrix = matrix.pivot_table(index='user_id', columns='media_id',
+                                values='is_listened', aggfunc='median')
     # filter users with less than 10 ratings in items
     m = matrix.count(axis=1) > 10
+
     matrix = matrix[matrix.index.isin(m[m ==True].index)]
     matrix = matrix.applymap(round)
 
@@ -38,11 +39,12 @@ def binary_matrix_popular_items(data, users=None):
         return matrix
 
 def binary_matrix_50_50(data, users=None):
+
     """
-    :params data: df | this is the input data that should be sampeled
+    :params data: df | this is the input data that should be sampled
     
-    returns a ratings matrix with the hit rates of the 50 most popular items and the 
-    50 random sampled items from the next 10,000 items. 
+    returns a ratings matrix with the hit rates of the 50 most
+    popular items and the 50 random sampled items from the next 10,000 items.
     """
     # get items by popularity
     media_count = data.groupby('media_id')['user_id'].nunique()
@@ -57,13 +59,13 @@ def binary_matrix_50_50(data, users=None):
     matrix = data[data['media_id'].isin(media)]
     
     # make pivot table
-    matrix = matrix.pivot_table(index='user_id', columns ='media_id',
-                                              values='is_listened',
-                                              aggfunc='median')
+    matrix = matrix.pivot_table(index='user_id', columns='media_id',
+                                values='is_listened', aggfunc='median')
     # filter users with less than 10 ratings in items
     m = matrix.count(axis=1) > 10
-    matrix = matrix[matrix.index.isin(m[m ==True].index)]
-    matrix = matrix.applymap(round)
+    matrix = matrix[matrix.index.isin(m[m==True].index)]
+    # Round the values to avoid media = 0.5
+    matrix = matrix.applymap(lambda x: x if np.isnan(x) else round(x))
     
     if users:
         if users > len(matrix): 
@@ -74,9 +76,11 @@ def binary_matrix_50_50(data, users=None):
     else: 
         return matrix
 
+
 def hit_rate_matrix_popular_items(data, users=None):
+
     """
-    :params data: df | this is the input data that should be sampeled
+    :params data: df | this is the input data that should be sampled
     
     returns a ratings matrix with the hit rates of the 100 most popular items
     """
@@ -92,12 +96,11 @@ def hit_rate_matrix_popular_items(data, users=None):
     matrix = data[data['media_id'].isin(media)]
     
     # make pivot table
-    matrix = matrix.pivot_table(index='user_id', columns ='media_id',
-                                              values='is_listened',
-                                              aggfunc='mean')
+    matrix = matrix.pivot_table(index='user_id', columns='media_id',
+                                values='is_listened', aggfunc='mean')
     # filter users with less than 10 ratings in items
     m = matrix.count(axis=1) > 10
-    matrix = matrix[matrix.index.isin(m[m ==True].index)]
+    matrix = matrix[matrix.index.isin(m[m==True].index)]
     
     if users:
         if users > len(matrix): 
@@ -108,12 +111,14 @@ def hit_rate_matrix_popular_items(data, users=None):
     else: 
         return matrix
 
+
 def hit_rate_matrix_50_50(data, users=None):
+
     """
-    :params data: df | this is the input data that should be sampeled
+    :params data: df | this is the input data that should be sampled
     
-    returns a ratings matrix with the hit rates of the 50 most popular items and the 
-    50 random sampled items from the next 10,000 items. 
+    returns a ratings matrix with the hit rates of the 50 most popular
+    items and the 50 random sampled items from the next 10,000 items.
     """
     # get items by popularity
     media_count = data.groupby('media_id')['user_id'].nunique()
@@ -128,12 +133,11 @@ def hit_rate_matrix_50_50(data, users=None):
     matrix = data[data['media_id'].isin(media)]
     
     # make pivot table
-    matrix = matrix.pivot_table(index='user_id', columns ='media_id',
-                                              values='is_listened',
-                                              aggfunc='mean')
+    matrix = matrix.pivot_table(index='user_id', columns='media_id',
+                                values='is_listened', aggfunc='mean')
     # filter users with less than 10 ratings in items
     m = matrix.count(axis=1) > 10
-    matrix = matrix[matrix.index.isin(m[m ==True].index)]
+    matrix = matrix[matrix.index.isin(m[m==True].index)]
     
     if users:
         if users > len(matrix): 

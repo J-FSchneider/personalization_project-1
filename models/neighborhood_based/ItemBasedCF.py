@@ -46,7 +46,7 @@ class ItemBasedCF():
 
         return top_k_neighbors
 
-    def predict(self, user, item):
+    def predict(self, user, item, verbose=False):
         """
         Predict the probability that input user will like input item
         :param user: int | user ID
@@ -82,8 +82,9 @@ class ItemBasedCF():
         # Checks if all ratings are NaN, then input the user mean rating
         # in the original rating matrix
         if size == 0:
-            print("User %i has not rated any of the neighbors of item  %i" %
-                  (user, item))
+            if verbose:
+                print("User %i has not rated any of the neighbors of item  %i" %
+                      (user, item))
             return np.nanmean(self.data.loc[user])
 
         return weighted_ratings / sum_abs_coeff
