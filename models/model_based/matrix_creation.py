@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 # TODO: unused imports to be deleted
 
-def bianry_matrix_popular_items(data):
+def binary_matrix_popular_items(data, users=None):
     """
     :params data: df | this is the input data that should be sampeled
     
@@ -27,10 +27,17 @@ def bianry_matrix_popular_items(data):
     m = matrix.count(axis=1) > 10
     matrix = matrix[matrix.index.isin(m[m ==True].index)]
     matrix = matrix.applymap(round)
-    
-    return matrix
 
-def binary_matrix_50_50(data):
+    if users:
+        if users > len(matrix): 
+            print('Matrix has less than ' + str(users) + ' Users. Return maximum Matrix!')
+            return matrix
+        else:
+            return matrix[:users]
+    else: 
+        return matrix
+
+def binary_matrix_50_50(data, users=None):
     """
     :params data: df | this is the input data that should be sampeled
     
@@ -58,9 +65,16 @@ def binary_matrix_50_50(data):
     matrix = matrix[matrix.index.isin(m[m ==True].index)]
     matrix = matrix.applymap(round)
     
-    return matrix
+    if users:
+        if users > len(matrix): 
+            print('Matrix has less than ' + str(users) + ' Users. Return maximum Matrix!')
+            return matrix
+        else:
+            return matrix[:users]
+    else: 
+        return matrix
 
-def hit_rate_matrix_popular_items(data):
+def hit_rate_matrix_popular_items(data, users=None):
     """
     :params data: df | this is the input data that should be sampeled
     
@@ -85,9 +99,16 @@ def hit_rate_matrix_popular_items(data):
     m = matrix.count(axis=1) > 10
     matrix = matrix[matrix.index.isin(m[m ==True].index)]
     
-    return matrix
+    if users:
+        if users > len(matrix): 
+            print('Matrix has less than ' + str(users) + ' Users. Return maximum Matrix!')
+            return matrix
+        else:
+            return matrix[:users]
+    else: 
+        return matrix
 
-def hit_rate_matrix_50_50(data):
+def hit_rate_matrix_50_50(data, users=None):
     """
     :params data: df | this is the input data that should be sampeled
     
@@ -114,5 +135,12 @@ def hit_rate_matrix_50_50(data):
     m = matrix.count(axis=1) > 10
     matrix = matrix[matrix.index.isin(m[m ==True].index)]
     
-    return matrix
+    if users:
+        if users > len(matrix): 
+            print('Matrix has less than ' + str(users) + ' Users. Return maximum Matrix!')
+            return matrix
+        else:
+            return matrix[:users]
+    else: 
+        return matrix
 
