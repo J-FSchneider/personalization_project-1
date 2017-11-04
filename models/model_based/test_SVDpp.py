@@ -3,7 +3,7 @@
 import pandas as pd
 from utils.loss_functions import mean_squared_error
 from models.model_based.SVDpp import SurSVDpp
-from models.cross_validation.latent_factor_test import latent_factor_test
+from models.cross_validation.parameter_test import parameter_test
 from models.cross_validation.ModelTester import ModelTester
 
 ratings_dict = {"itemID": [1, 1, 1, 2, 2],
@@ -30,10 +30,10 @@ print(a.predict(user=2, item=2))
 k_values = [1, 2, 3]
 cv_times = 3
 
-
-d_test, d_train = latent_factor_test(k_val=k_values,
+model_tester = ModelTester(ratios=(0.5, 0.2, 0.3))
+d_test, d_train = parameter_test(k_val=k_values,
                                      cv_times=cv_times,
                                      model=SurSVDpp,
                                      loss_function=mean_squared_error,
-                                     model_tester=ModelTester,
+                                     model_tester=model_tester,
                                      data=ratings_matrix)
