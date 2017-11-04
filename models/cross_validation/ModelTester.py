@@ -101,7 +101,7 @@ class ModelTester():
             non_null_indices_pred = list(predictions[predictions.notnull()]
                                          .stack().index)
             pred = {(u, i): predictions.loc[u][i]
-                    for (u, i) in non_null_indices_pred}
+                    for (u, i) in self.test_set}
             predictions = pred
 
         # Check that the predictions are here for all the (u, i) in test_set
@@ -129,7 +129,7 @@ class ModelTester():
             non_null_indices_pred = list(predictions[predictions.notnull()]
                                          .stack().index)
             pred = {(u, i): predictions.loc[u][i]
-                    for (u, i) in non_null_indices_pred}
+                    for (u, i) in self.valid_set}
             predictions = pred
 
         # Check that the predictions are here for all the (u, i) in test_set
@@ -177,6 +177,11 @@ class ModelTester():
         return loss
 
     def shuffle_cv(self):
+        """
+        Shuffles the indices between valid and train set without
+        changing the test set
+        :return: void
+        """
         merged = {**self.train_set, **self.valid_set}
         tmp = list(merged.keys())
         merged_shuffled_keys = [tmp[i] for i in np.argsort(np.random.randn(len(merged)))]
@@ -189,17 +194,7 @@ class ModelTester():
         # Create the new self.data rating dataframe
         temp = pd.Series(self.train_set).reset_index()
         temp.columns = ["user_id", "media_id", "rating"]
-        print("\nHere is the self.data")
-        print(self.data.head())
-        print(self.data.shape)
-        print("\nBefore Pivoting")
-        print(temp.head())
-        aux = temp.pivot(index="user_id",
-                               columns="media_id",
-                               values="rating")
-        print("\nHere is the aux")
-        print(aux)
-        print(aux.shape)
+
         self.data = temp.pivot(index="user_id",
                                columns="media_id",
                                values="rating")
