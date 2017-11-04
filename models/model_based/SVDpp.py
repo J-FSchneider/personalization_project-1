@@ -25,8 +25,8 @@ class SurSVDpp:
 
     def fit(self, rating_matrix):
         """
-        Fits the instance to the rating matrix. The index must be the users and
-        the columns the items.
+        Fits the instance to the rating matrix. The index must be
+        the users and the columns the items.
         :param rating_matrix: pd.DataFrame | rating matrix
         :return: void
         """
@@ -66,7 +66,7 @@ class SurSVDpp:
         """
         cond1 = self.predictions["userID"] == user
         cond2 = self.predictions["itemID"] == item
-        mask = (cond1) & (cond2)
+        mask = cond1 & cond2
         proba = float(self.predictions.loc[mask, "ratings"])
         return proba
 
