@@ -18,10 +18,10 @@ class SurSVDpp:
     def __init__(self, k=5):
         if not isinstance(k, int) or k <= 0:
             raise IOError("Parameter k should be a positive integer.")
-        self.algo = SVDpp()
         self.data = None
-        self.predictions = pd.DataFrame()
         self.k = k
+        self.algo = SVDpp(n_factors=self.k)
+        self.predictions = pd.DataFrame()
 
     def fit(self, rating_matrix):
         """
@@ -34,13 +34,12 @@ class SurSVDpp:
         data_long.columns = ["user_id", "item_id", "ratings"]
 
         # Run SVD++
-        algo = SVDpp(n_factors=self.k)
         reader = Reader(rating_scale=(0, 1))
         data = Dataset.load_from_df(data_long, reader)
         trainset = data.build_full_trainset()
-        algo.train(trainset)
+        self.algo.train(trainset)
         testset = trainset.build_anti_testset()
-        predictions = algo.test(testset)
+        predictions = self.algo.test(testset)
 
         # Reconstruct predictions
         users = []
