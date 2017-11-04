@@ -1,7 +1,7 @@
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Import Packages
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# import numpy as np
+import numpy as np
 import pandas as pd
 from surprise import SVDpp
 from surprise import Dataset
@@ -67,7 +67,8 @@ class SurSVDpp:
         cond1 = self.predictions["userID"] == user
         cond2 = self.predictions["itemID"] == item
         mask = cond1 & cond2
-        proba = float(self.predictions.loc[mask, "ratings"])
+        temp = np.array(self.predictions.loc[mask, "ratings"])
+        proba = np.sum(temp)
         return proba
 
 # =========================================================================

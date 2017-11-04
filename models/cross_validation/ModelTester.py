@@ -189,6 +189,17 @@ class ModelTester():
         # Create the new self.data rating dataframe
         temp = pd.Series(self.train_set).reset_index()
         temp.columns = ["user_id", "media_id", "rating"]
+        print("\nHere is the self.data")
+        print(self.data.head())
+        print(self.data.shape)
+        print("\nBefore Pivoting")
+        print(temp.head())
+        aux = temp.pivot(index="user_id",
+                               columns="media_id",
+                               values="rating")
+        print("\nHere is the aux")
+        print(aux)
+        print(aux.shape)
         self.data = temp.pivot(index="user_id",
                                columns="media_id",
                                values="rating")
