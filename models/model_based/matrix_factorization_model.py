@@ -66,7 +66,7 @@ def simple_latent_factor_model(M,
     # TODO: to use in a separate function
     # calculate rating prediction
 
-    R_hat = np.dot(U, V)
+    R_hat = pd.DataFrame(np.dot(U, V))
     # print R_hat.shape
 
     return R_hat, U, V
@@ -78,7 +78,7 @@ def latent_factors_with_bias(M,
                             bias_weights=None, 
                             regularization=0,
                             learning_rate=0.000001, 
-                            convergence_rate =0.9999
+                            convergence_rate =0.1
                             ):
     # Calculates a latent factor model with give number of latent factors by gradient descent. 
     # Returns the ratings prediction matrix and the latent factor matrices U (users) and V (items)
@@ -92,16 +92,19 @@ def latent_factors_with_bias(M,
     if bias_weights: 
         W = M.copy()*0 + 1
         W = W.fillna(bias_weights)
-    print W.head()                   
+
     if bias: 
         M = M.fillna(bias)
     # GD until convergence
     convergence = False
-    J1 = 1000000
+    J1 = 1000000000
     i = 0
     while not(convergence): 
         # compute Gradient and Loss
-        E, J = squared_error_gradient(M,U,V,W)
+        if bias: 
+            E, J = squared_error_gradient(M,U,V,W)
+        else: 
+            E, J = squared_error_gradient(M,U,V)
         # fill Errors with 0 to ignore the values for prediction in the update
         E_upt = E.fillna(0)
         # update the matrixes U and V by gradient descent
@@ -112,10 +115,10 @@ def latent_factors_with_bias(M,
         U = U_new
         V = V_new
 
-        print 'Loss on iteration ' + str(i) + ': ' + str(J)
+        # print 'Loss on iteration ' + str(i) + ': ' + str(J)
         
         # Convergence criteria
-        if J/J1 > convergence_rate:
+        if abs(J-J1) < convergence_rate:
             convergence = True
         else:
             J1 = J
@@ -124,7 +127,7 @@ def latent_factors_with_bias(M,
     # calculate rating prediciton
 
     R_hat = np.dot(U,V)
-    print R_hat.shape
+
     return R_hat, U, V
 
 def test_accuracy(M, R_hat):
