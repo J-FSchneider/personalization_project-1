@@ -2,7 +2,7 @@
 # import numpy as np
 import pandas as pd
 from utils.loss_functions import mean_squared_error
-from SVDpp import SurSVDpp
+from models.model_based.SVDpp import SurSVDpp
 from models.cross_validation.latent_factor_test import latent_factor_test
 from models.cross_validation.ModelTester import ModelTester
 
