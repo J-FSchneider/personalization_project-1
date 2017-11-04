@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 
 
 def binary_matrix_popular_items(data, n_users=None, n_items=100, min_rating=10):
