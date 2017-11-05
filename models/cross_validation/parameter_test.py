@@ -21,12 +21,15 @@ def parameter_test(k_val,
         if verbose:
             print("----------- k = %i -----------\n" % k)
 
+        # Get the predictions for the test set, as the test set does not
+        # change for the CV
+        pred_test = {(u, i): model_k.predict(u, i)
+                     for (u, i) in model_tester.test_set}
+
         for j in range(cv_times):
             if verbose:
                 print(">>> Fold %i:\n" % j)
-            # Obtain the predictions on test and train for the model
-            pred_test = {(u, i): model_k.predict(u, i)
-                         for (u, i) in model_tester.test_set}
+            # Obtain the predictions on train set for the model
             pred_train = {(u, i): model_k.predict(u, i)
                           for (u, i) in model_tester.train_set}
 
@@ -45,6 +48,7 @@ def parameter_test(k_val,
                                             verbose=verbose)
 
             # Fill-in the dictionaries
+            # TODO: for test set can be done once only outside cv loop
             if k not in d_test:
                 d_test[k] = [val_test]
             else:
