@@ -23,7 +23,7 @@ def parameter_test(k_val,
 
         for j in range(cv_times):
             if verbose:
-                print(">>> Fold 1:\n")
+                print(">>> Fold %i:\n" % j)
             # Obtain the predictions on test and train for the model
             pred_test = {(u, i): model_k.predict(u, i)
                          for (u, i) in model_tester.test_set}
