@@ -19,7 +19,7 @@ def parameter_test(k_val,
         model_k = model(k=k)
         model_k.fit(model_tester.data)
         if verbose:
-            print("----------- k = %i -----------\n")
+            print("----------- k = %i -----------\n" % k)
 
         for j in range(cv_times):
             if verbose:
