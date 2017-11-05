@@ -1,13 +1,4 @@
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Import Packages
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 import pandas as pd
-
-# =========================================================================
-
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Define Function
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 def parameter_test(k_val,
@@ -15,8 +6,9 @@ def parameter_test(k_val,
                    model,
                    model_tester,
                    loss_function,
-                   data):
-
+                   data,
+                   verbose=True):
+    # TODO: add default parameters like cv_times
     # Initialize empty dictionaries
     d_test = {}
     d_train = {}
@@ -26,21 +18,37 @@ def parameter_test(k_val,
         # Generate model for the given k
         model_k = model(k=k)
         model_k.fit(model_tester.data)
+        if verbose:
+            print("----------- k = %i -----------\n" % k)
+
+        # Get the predictions for the test set, as the test set does not
+        # change for the CV
+        pred_test = {(u, i): model_k.predict(u, i)
+                     for (u, i) in model_tester.test_set}
 
         for j in range(cv_times):
-            # Obtain the predictions on test and train for the model
-            pred_test = {(u, i): model_k.predict(u, i)
-                         for (u, i) in model_tester.test_set}
+            if verbose:
+                print(">>> Fold %i:\n" % j)
+            # Obtain the predictions on train set for the model
             pred_train = {(u, i): model_k.predict(u, i)
                           for (u, i) in model_tester.train_set}
 
             # Get performance values by the given loss function
+            if verbose:
+                print("Test set")
             val_test = \
-                model_tester.evaluate_test(pred_test, loss_function)
+                model_tester.evaluate_test(pred_test,
+                                           loss_function,
+                                           verbose=verbose)
+            if verbose:
+                print("Train set")
             val_train = \
-                model_tester.evaluate_train(pred_train, loss_function)
+                model_tester.evaluate_train(pred_train,
+                                            loss_function,
+                                            verbose=verbose)
 
             # Fill-in the dictionaries
+            # TODO: for test set can be done once only outside cv loop
             if k not in d_test:
                 d_test[k] = [val_test]
             else:
@@ -55,12 +63,6 @@ def parameter_test(k_val,
             model_tester.shuffle_cv()
 
     return d_test, d_train
-
-# =========================================================================
-
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Plotting Function
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 def ready_to_plot(dictionary):
@@ -85,5 +87,3 @@ def ready_to_plot(dictionary):
                   left_index=True,
                   right_index=True)
     return df
-
-# =========================================================================

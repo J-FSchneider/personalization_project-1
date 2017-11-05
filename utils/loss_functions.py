@@ -1,4 +1,4 @@
-def mean_squared_error(prediction, test_set):
+def mean_squared_error(prediction, test_set, verbose=True):
     """
 	Calculates the mean squared error between the test_set and the prediction
 	:params prediction: dict | input of form: {(i,u): value}
@@ -9,11 +9,12 @@ def mean_squared_error(prediction, test_set):
         i_error = (prediction[i] - test_set[i]) ** 2
         error += i_error
     error = error / len(test_set.keys())
-    print("MSE: " + str(error))
+    if verbose:
+        print("MSE: " + str(error))
     return error
 
 
-def absolute_mean_error(prediction, test_set):
+def absolute_mean_error(prediction, test_set, verbose=True):
     """
 	Calculates the absolute mean error between the test_set and the prediction
 	:params prediction: dict | input of form: {(i,u): value}
@@ -24,11 +25,12 @@ def absolute_mean_error(prediction, test_set):
         i_error = abs(prediction[i] - test_set[i])
         error += i_error
     error = error / len(test_set.keys())
-    print("AME: " + str(error))
+    if verbose:
+        print("AME: " + str(error))
     return error
 
 
-def precision(prediction, test_set, threshhold=0.5):
+def precision(prediction, test_set, threshhold=0.5, verbose=True):
     """
     Calculates the precision between the test_set and the prediction
     :param prediction: dict | input of form: {(i,u): value}
@@ -51,11 +53,12 @@ def precision(prediction, test_set, threshhold=0.5):
             tp = tp + 1
     prec = float(tp) / float(p)
 
-    print("Precision: " + str(prec))
+    if verbose:
+        print("Precision: " + str(prec))
     return prec
 
 
-def recall(prediction, test_set, threshhold=0.5):
+def recall(prediction, test_set, threshhold=0.5, verbose=True):
     """
     Calculates the recall between the test_set and the prediction
 
@@ -64,6 +67,7 @@ def recall(prediction, test_set, threshhold=0.5):
     :param threshhold: Probability threshhold for prediction
     :return: value of recall
     """
+    # TODO: not best way to implement it, rethink
     prediction1 = dict(prediction)
     for j in prediction1.keys():
         if prediction1[j] >= threshhold:
@@ -81,5 +85,6 @@ def recall(prediction, test_set, threshhold=0.5):
 
     rec = float(tp) / (float(tp) + float(fn))
 
-    print("recall: " + str(rec))
+    if verbose:
+        print("Recall: " + str(rec))
     return rec

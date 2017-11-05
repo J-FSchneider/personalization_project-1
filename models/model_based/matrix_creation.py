@@ -31,7 +31,7 @@ def binary_matrix_popular_items(data, n_users=None, n_items=100, min_rating=10):
     m = matrix.count(axis=1) > min_rating
 
     matrix = matrix[matrix.index.isin(m[m==True].index)]
-    matrix = matrix.applymap(round)
+    matrix = matrix.applymap(lambda x: x if np.isnan(x) else round(x))
 
     if n_users:
         if n_users > len(matrix):
