@@ -2,20 +2,21 @@ import pandas as pd
 
 
 def parameter_test(k_val,
-                   cv_times,
                    model,
                    model_tester,
                    loss_function,
                    data,
+                   cv_times=3,
                    verbose=True):
-    # TODO: add default parameters like cv_times
     # Initialize empty dictionaries
     d_test = {}
     d_train = {}
-    model_tester.fit_transform(data)
+    # Save an original copy of the data
+    data_original = data.copy()
 
     for k in k_val:
         # Generate model for the given k
+        model_tester.fit_transform(data)
         model_k = model(k=k)
         model_k.fit(model_tester.data)
         if verbose:
@@ -25,6 +26,18 @@ def parameter_test(k_val,
         # change for the CV
         pred_test = {(u, i): model_k.predict(u, i)
                      for (u, i) in model_tester.test_set}
+        if verbose:
+            print("Test set")
+        val_test = \
+            model_tester.evaluate_test(pred_test,
+                                       loss_function,
+                                       verbose=verbose)
+
+        # Fill-in the dictionaries
+        if k not in d_test:
+            d_test[k] = [val_test]
+        else:
+            d_test[k].append(val_test)
 
         for j in range(cv_times):
             if verbose:
@@ -35,12 +48,6 @@ def parameter_test(k_val,
 
             # Get performance values by the given loss function
             if verbose:
-                print("Test set")
-            val_test = \
-                model_tester.evaluate_test(pred_test,
-                                           loss_function,
-                                           verbose=verbose)
-            if verbose:
                 print("Train set")
             val_train = \
                 model_tester.evaluate_train(pred_train,
@@ -48,12 +55,6 @@ def parameter_test(k_val,
                                             verbose=verbose)
 
             # Fill-in the dictionaries
-            # TODO: for test set can be done once only outside cv loop
-            if k not in d_test:
-                d_test[k] = [val_test]
-            else:
-                d_test[k].append(val_test)
-
             if k not in d_train:
                 d_train[k] = [val_train]
             else:
@@ -61,6 +62,9 @@ def parameter_test(k_val,
 
             # Shuffle CV and Train set
             model_tester.shuffle_cv()
+
+        # Reset in-place modifications
+        data = data_original.copy()
 
     return d_test, d_train
 
