@@ -13,11 +13,11 @@ def parameter_test(k_val,
     # Initialize empty dictionaries
     d_test = {}
     d_train = {}
+    model_tester.fit_transform(data)
 
     for k in k_val:
         # Generate model for the given k
         model_k = model(k=k)
-        model_tester.fit_transform(data)
         model_k.fit(model_tester.data)
 
         for j in range(cv_times):
