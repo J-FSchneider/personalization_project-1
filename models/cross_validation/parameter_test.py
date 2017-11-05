@@ -1,4 +1,11 @@
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Import Packages
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+import pandas as pd
+
+# =========================================================================
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Define Function
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -48,5 +55,35 @@ def parameter_test(k_val,
             model_tester.shuffle_cv()
 
     return d_test, d_train
+
+# =========================================================================
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Plotting Function
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+def ready_to_plot(dictionary):
+    """
+    This function takes as an input a dictionary that results from
+    testing different latent factos to the model.
+    :param dictionary: dict | dictionary that contains per value of k
+                        what was the value of the loss function
+    :return df: pd.DataFrame | a summary data frame where per
+                                each latent factor we get the
+                                mean and std of the loss function
+    """
+    df = pd.DataFrame(dictionary)
+    mean = df.mean(axis=0)
+    std = df.std(axis=0)
+    df_mean = pd.Series.to_frame(mean)
+    df_std = pd.Series.to_frame(std)
+    df_mean.columns = ["mean"]
+    df_std.columns = ["std"]
+    df = pd.merge(df_mean, df_std,
+                  how="inner",
+                  left_index=True,
+                  right_index=True)
+    return df
 
 # =========================================================================
