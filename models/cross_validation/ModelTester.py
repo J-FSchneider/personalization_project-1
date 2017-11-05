@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 
-class ModelTester():
+class ModelTester:
     def __init__(self, ratios=(0.7, 0.2, 0.1), model_based=True, seed=42):
         """
         Constructor of the class
@@ -184,17 +184,10 @@ class ModelTester():
         """
         merged = {**self.train_set, **self.valid_set}
         tmp = list(merged.keys())
-        merged_shuffled_keys = [tmp[i] for i in np.argsort(np.random.randn(len(merged)))]
-        x, y = self.ratios[0], self.ratios[1]
-        ratio = x / (x + y)
-        new_train_indices = merged_shuffled_keys[:int(len(merged) * ratio)]
-        new_valid_indices = merged_shuffled_keys[int(len(merged) * ratio) + 1:]
+        random_keys = np.random.randn(len(merged))
+        merged_shuffled_keys = [tmp[i] for i in np.argsort(random_keys)]
+        size = len(self.train_set)
+        new_train_indices = merged_shuffled_keys[:size]
+        new_valid_indices = merged_shuffled_keys[size:]
         self.train_set = {t: merged[t] for t in new_train_indices}
         self.valid_set = {t: merged[t] for t in new_valid_indices}
-        # Create the new self.data rating dataframe
-        temp = pd.Series(self.train_set).reset_index()
-        temp.columns = ["user_id", "media_id", "rating"]
-
-        self.data = temp.pivot(index="user_id",
-                               columns="media_id",
-                               values="rating")
