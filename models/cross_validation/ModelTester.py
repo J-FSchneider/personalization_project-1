@@ -87,7 +87,7 @@ class ModelTester:
 
         print(">>> DONE")
 
-    def evaluate_test(self, predictions, loss_func):
+    def evaluate_test(self, predictions, loss_func, verbose=True):
         """
         Loss function applied to predictions and to hidden test ratings
         :param predictions: dict or pd.DataFrame | dictionary or pd.DataFrame
@@ -111,11 +111,11 @@ class ModelTester:
                               "the (user, item) combinations of the test set")
 
         # Calculate Loss
-        loss = loss_func(predictions, self.test_set)
+        loss = loss_func(predictions, self.test_set, verbose=verbose)
 
         return loss 
 
-    def evaluate_valid(self, predictions, loss_func):
+    def evaluate_valid(self, predictions, loss_func, verbose=True):
         """
         Loss function applied to predictions and hidden validation set ratings
         :param predictions: dict or pd.DataFrame | dictionary or pd.DataFrame
@@ -139,11 +139,11 @@ class ModelTester:
                               "the (user, item) combinations of the "
                               "validation set")
         # Calculate loss 
-        loss = loss_func(predictions, self.valid_set)
+        loss = loss_func(predictions, self.valid_set, verbose=verbose)
 
         return loss 
 
-    def evaluate_train(self, predictions, loss_func):
+    def evaluate_train(self, predictions, loss_func, verbose=True):
         """
         Loss function applied to predictions and train ratings.
         This function will be used by matrix factorization models only.
@@ -172,7 +172,7 @@ class ModelTester:
                               "the (user, item) combinations of the "
                               "train set")
         # Calculate loss 
-        loss = loss_func(predictions, self.train_set)
+        loss = loss_func(predictions, self.train_set, verbose=verbose)
 
         return loss
 
