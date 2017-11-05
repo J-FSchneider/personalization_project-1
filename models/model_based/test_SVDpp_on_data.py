@@ -2,14 +2,14 @@
 # Import Packages
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # import numpy as np
-import pandas as pd
-from utils.loss_functions import mean_squared_error
-from models.model_based.SVDpp import SurSVDpp
-from models.model_based.matrix_creation \
-    import hit_rate_matrix_popular_items
-from models.cross_validation.ModelTester import ModelTester
-from models.cross_validation.parameter_test import parameter_test
-from models.cross_validation.parameter_test import ready_to_plot
+    import pandas as pd
+    from utils.loss_functions import mean_squared_error
+    from models.model_based.SVDpp import SurSVDpp
+    from models.model_based.matrix_creation \
+        import hit_rate_matrix_popular_items
+    from models.cross_validation.ModelTester import ModelTester
+    from models.cross_validation.parameter_test import parameter_test
+    from models.cross_validation.parameter_test import ready_to_plot
 # =========================================================================
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39,8 +39,9 @@ print(ratings_matrix.iloc[:size, :size])
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Perform Tests with SVD++ model
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-k_values = [5, 10, 50, 75, 100, 200]
+# k_values = [5, 10, 50, 75, 100, 200]
 # k_values = [2, 5, 10]
+k_values = [5, 50, 100]
 cv_times = 3
 ratios = (0.6, 0.2, 0.2)
 model_tester = ModelTester(ratios=ratios, model_based=True, seed=42)
