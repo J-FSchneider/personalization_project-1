@@ -1,4 +1,13 @@
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Import Packages
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 import pandas as pd
+
+# =========================================================================
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Define Functions
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 def parameter_test(k_val,
@@ -8,6 +17,29 @@ def parameter_test(k_val,
                    data,
                    cv_times=3,
                    verbose=True):
+    """
+    This functions iteratively evaluates the performance of a given algor
+    against different values of latent factor. For evaluation purposes
+    it leaves a hold-out set to understand the variance of the estimation
+    within the training set.
+    :param k_val: list | a list of integers where to take the different
+                        values of the latent factors
+    :param model: class obj | an instance of a class that defines de algo
+                            to be used
+    :param model_tester: class obj | an instance of a class that defines
+                                    the evaluation and split of the data
+    :param loss_function: func | a function that computes the error
+    :param data: pd.DataFrame | a DataFrame that contains the information
+    :param cv_times: int | the number of times that the metrics are going
+                        to be computed in the training set
+    :param verbose: boolean | to show the prints or the errors
+    :return df_train: dict | a dictionary that contains as keys the user
+                            item combinations and the probabilities
+                            that the user will like the item. This for th
+                            test set
+    :return d_train: dict | a dictionary with the same characteristics as
+                            above but for the training set
+    """
     # Initialize empty dictionaries
     d_test = {}
     d_train = {}
@@ -72,7 +104,8 @@ def parameter_test(k_val,
 def ready_to_plot(dictionary):
     """
     This function takes as an input a dictionary that results from
-    testing different latent factos to the model.
+    testing different latent factors to the model. Then it outputs
+    a pd.DataFrame that summarizes the results
     :param dictionary: dict | dictionary that contains per value of k
                         what was the value of the loss function
     :return df: pd.DataFrame | a summary data frame where per
@@ -91,3 +124,5 @@ def ready_to_plot(dictionary):
                   left_index=True,
                   right_index=True)
     return df
+
+# =========================================================================
