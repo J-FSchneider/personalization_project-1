@@ -17,8 +17,8 @@ from models.model_based.data_prep import plot_relevant_elements
 # Load Data
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 filename = "/home/ap/personalization_project/models/model_based/train.csv"
-# data = pd.read_csv(filename, nrows=10000)
-data = pd.read_csv(filename)
+data = pd.read_csv(filename, nrows=10000)
+# data = pd.read_csv(filename)
 np.set_printoptions(precision=2, suppress=True)
 # data = pd.read_csv(filename)
 
@@ -55,15 +55,4 @@ report3 = plot_relevant_elements(data, user_range, "artist_id",
 print("\n")
 print(report3)
 
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Plot Results
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#
-# plt.figure()
-# plt.plot(x[:, 0], x[:, 1])
-#
-# plt.figure()
-# plt.plot(x[:, 0], x[:, 3])
-# plt.show()
-#
 # =========================================================================
