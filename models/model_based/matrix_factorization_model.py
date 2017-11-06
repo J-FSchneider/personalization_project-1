@@ -224,7 +224,7 @@ def hyper_parameter_tuning(data,
             error_mse.append(mse)
             error_ame.append(ame)
 
-    elif type(regularization) == list:
+    elif type(bias_weights) == list:
         for bw in bias_weights:
             predictions, U, V = latent_factors_with_bias(data,
                                                         latent_factors=latent_factors,
