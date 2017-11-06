@@ -182,7 +182,8 @@ class ModelTester:
         changing the test set
         :return: void
         """
-        merged = {**self.train_set, **self.valid_set}
+        merged = self.train_set.copy()
+        merged.update(self.valid_set)
         tmp = list(merged.keys())
         random_keys = np.random.randn(len(merged))
         merged_shuffled_keys = [tmp[i] for i in np.argsort(random_keys)]
