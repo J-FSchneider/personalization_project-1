@@ -25,6 +25,41 @@ class SurSVD:
                         reg_all=0)
         self.predictions = pd.DataFrame()
 
+    def fit_directly(self, data_long):
+        """
+        This function directly computes the predictions
+        of the algorithm for the data provided. The
+        data needs to be in the long shape format. It then
+        add to the class attributes the predictions made
+        by the algorithm (maintaining the long format)
+        :param data_long: pd.DataFrame | DataFrame in the long
+                                    shape format
+        :return void:
+        """
+        # Run SVD++
+        reader = Reader(rating_scale=(0, 1))
+        data = Dataset.load_from_df(data_long, reader)
+        trainset = data.build_full_trainset()
+        self.algo.train(trainset)
+        testset = trainset.build_anti_testset()
+        predictions = self.algo.test(testset)
+
+        # Reconstruct predictions
+        users = []
+        items = []
+        ratings = []
+        dataframe = pd.DataFrame()
+        for uid, iid, r_ui, _, _ in predictions:
+            users.append(uid)
+            items.append(iid)
+            ratings.append(r_ui)
+
+        dataframe["userID"] = users
+        dataframe["itemID"] = items
+        dataframe["ratings"] = ratings
+
+        self.predictions = dataframe
+
     def fit(self, rating_matrix):
         """
         Fits the instance to the rating matrix. The index must be
