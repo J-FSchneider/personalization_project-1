@@ -20,7 +20,7 @@ from models.model_based.SVD import SurSVD
 # Load Data
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 filename = "/home/ap/personalization_project/models/model_based/train.csv"
-# data = pd.read_csv(filename, nrows=100000)
+# data_org = pd.read_csv(filename, nrows=10000)
 data_org = pd.read_csv(filename)
 np.set_printoptions(precision=2, suppress=True)
 # =========================================================================
@@ -33,14 +33,15 @@ data_filtered = data[data["listen_type"] == 1]
 
 # Define Thresholds
 thres = 0.1
-user_threshold = 100
+user_threshold = 5000
+print("\nRunning for {:d} users".format(user_threshold))
 
 # Filter the data for relevant users
 data_users = data[data["user_id"] <= user_threshold]
 
 # Acquire the most relevant songs
 songs_list = relevant_elements(data_users, "media_id", threshold=thres)
-print("\nThis is the number of relevant songs")
+print("\nThis is the number of relevant songs\n")
 print(len(songs_list))
 
 # Filter the data to contain the most relevant songs
@@ -58,7 +59,9 @@ ratings_matrix = df.pivot(index="userID",
 k = 5
 # k_values = [1, 2, 5, 7, 10, 50, 75, 100, 200, 250, 500]
 # k_values = [5, 50, 100]
-k_values = [2, 5, 10, 100]
+# k_values = [2, 5, 10, 100]
+# k_values = [2, 5]
+k_values = [2]
 cv_times = 1
 ratios = (0.7, 0.1, 0.2)
 model_tester = ModelTester(ratios=ratios, model_based=True, seed=42)
@@ -105,7 +108,7 @@ print("\nBelow is the result for the train set most relevant")
 print(dftrain)
 # =========================================================================
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Perform Tests with SVD with 100 top songs
+# Perform Tests with SVD for 100 top songs
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ratings_matrix = hit_rate_matrix_popular_items(data_org)
 d_test, d_train = parameter_test(k_val=k_values,
@@ -117,7 +120,7 @@ d_test, d_train = parameter_test(k_val=k_values,
                                  verbose=False)
 # =========================================================================
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Print Results SVD
+# Print Results SVD for 100 top songs
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 dftest = ready_to_plot(d_test)
 dftrain = ready_to_plot(d_train)
