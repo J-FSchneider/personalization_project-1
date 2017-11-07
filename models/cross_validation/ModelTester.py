@@ -73,19 +73,21 @@ class ModelTester:
         for u, i in self.test_set:
             self.data.loc[u][i] = np.nan
 
-    def fit_transform(self, data):
+    def fit_transform(self, data, verbose=True):
         """
         Runs fit and then transform functions
         :param data:
         :return:
         """
-        print(">>> The cross-validation framework is being built ...\n"
+        if verbose:
+            print(">>> The cross-validation framework is being built ...\n"
               "    Please wait, you'll be able to use all of its features soon!")
 
         self.fit(data)
         self.transform()
 
-        print(">>> DONE")
+        if verbose:
+            print(">>> DONE")
 
     def evaluate_test(self, predictions, loss_func, verbose=True):
         """
