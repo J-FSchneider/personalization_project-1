@@ -123,6 +123,10 @@ def ready_to_plot(dictionary):
                   how="inner",
                   left_index=True,
                   right_index=True)
+    df["intervalMinus"] = df["mean"] + df["std"]
+    df["intervalPlus"] = df["mean"] - df["std"]
+    df["intervalTwoMinus"] = df["mean"] + 2 * df["std"]
+    df["intervalTwoPlus"] = df["mean"] - 2 * df["std"]
     return df
 
 # =========================================================================
