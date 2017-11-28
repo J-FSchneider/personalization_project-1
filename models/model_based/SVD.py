@@ -3,7 +3,7 @@
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 import numpy as np
 import pandas as pd
-from surprise import SVDpp
+from surprise import SVD
 from surprise import Dataset
 from surprise import Reader
 
@@ -14,13 +14,15 @@ from surprise import Reader
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-class SurSVDpp:
+class SurSVD:
     def __init__(self, k=5):
         if not isinstance(k, int) or k <= 0:
             raise IOError("Parameter k should be a positive integer.")
         self.data = None
         self.k = k
-        self.algo = SVDpp(n_factors=self.k)
+        self.algo = SVD(n_factors=self.k,
+                        biased=False,
+                        reg_all=0)
         self.predictions = pd.DataFrame()
 
     def fit_directly(self, data_long):
@@ -68,7 +70,7 @@ class SurSVDpp:
         data_long = rating_matrix.stack().reset_index()
         data_long.columns = ["user_id", "item_id", "ratings"]
 
-        # Run SVD++
+        # Run SVD
         reader = Reader(rating_scale=(0, 1))
         data = Dataset.load_from_df(data_long, reader)
         trainset = data.build_full_trainset()
