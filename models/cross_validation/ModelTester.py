@@ -98,8 +98,6 @@ class ModelTester:
         """
         # Transform prediction df into dictionary
         if isinstance(predictions, pd.DataFrame):
-            non_null_indices_pred = list(predictions[predictions.notnull()]
-                                         .stack().index)
             pred = {(u, i): predictions.loc[u][i]
                     for (u, i) in self.test_set}
             predictions = pred
@@ -126,8 +124,6 @@ class ModelTester:
         """
         # Transform prediction df into dictionary
         if isinstance(predictions, pd.DataFrame):
-            non_null_indices_pred = list(predictions[predictions.notnull()]
-                                         .stack().index)
             pred = {(u, i): predictions.loc[u][i]
                     for (u, i) in self.valid_set}
             predictions = pred
