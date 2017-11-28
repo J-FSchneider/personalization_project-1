@@ -59,35 +59,37 @@ def hydrate_artists(artists):
 
 
 if __name__ == '__main__':
-    train = pd.read_csv('../data/train.csv')
-    test = pd.read_csv('../data/test.csv')
+    train = pd.read_csv('../train.csv')
 
-    # Tracks
-    tracks = train.media_id.values
-    tracks = np.concatenate((tracks, test.media_id.values))
-    tracks = np.unique(tracks)
-    track_data = hydrate_tracks(tracks)
+    if 1:
+        # Tracks
+        print("=====> Fetching tracks info from Deezer API")
+        tracks = train.media_id.values
+        tracks = np.unique(tracks)
+        track_data = hydrate_tracks(tracks)
 
-    df = pd.DataFrame(track_data)
-    df.columns = ['id', 'rank', 'bpm', 'is_explicit']
-    df.to_csv('tracks.csv', index=False)
+        df = pd.DataFrame(track_data)
+        df.columns = ['id', 'rank', 'bpm', 'title', 'title_short']
+        df.to_csv('tracks.csv', index=False)
 
-    # Artists
-    artists = train.train_id.values
-    artists = np.concatenate((artists, test.artist_id.values))
-    artists = np.unique(artists)
-    artist_data = hydrate_artists(artists)
+    if 0:
+        # Artists
+        artists = train.train_id.values
+        artists = np.concatenate((artists, test.artist_id.values))
+        artists = np.unique(artists)
+        artist_data = hydrate_artists(artists)
 
-    df = pd.DataFrame(artist_data)
-    df.columns = ['id', 'nb_album', 'nb_fan']
-    df.to_csv('artists.csv', index=False)
+        df = pd.DataFrame(artist_data)
+        df.columns = ['id', 'nb_album', 'nb_fan']
+        df.to_csv('artists.csv', index=False)
 
-    # Albums
-    albums = train.album_id.values
-    albums = np.concatenate((albums, test.album_id.values))
-    albums = np.unique(albums)
-    album_data = hydrate_albums(albums)
+    if 0:
+        # Albums
+        albums = train.album_id.values
+        albums = np.concatenate((albums, test.album_id.values))
+        albums = np.unique(albums)
+        album_data = hydrate_albums(albums)
 
-    df = pd.DataFrame(album_data)
-    df.columns = ['id', 'fans']
-    df.to_csv('albums.csv', index=False)
+        df = pd.DataFrame(album_data)
+        df.columns = ['id', 'fans']
+        df.to_csv('albums.csv', index=False)
