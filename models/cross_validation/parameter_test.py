@@ -12,6 +12,7 @@ def parameter_test(k_val,
     # Initialize empty dictionaries
     d_test = {}
     d_train = {}
+    # TODO: get out of the function
     model_tester.fit_transform(data)
 
     for k in k_val:
