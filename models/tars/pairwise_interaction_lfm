@@ -1,0 +1,16 @@
+class PairwiseInteractionLFM
+
+    def __init__(self):
+        self.data = None
+        self.n = None
+        self.m = None
+        self.d = None
+
+    def fit(self):
+        """
+        
+        :return:
+        """
+
+
+    def predict(self):
