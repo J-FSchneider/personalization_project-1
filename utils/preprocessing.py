@@ -140,6 +140,137 @@ def parse_user_age(data):
 
     data["user_age_bucket"] = data["user_age"].map(get_user_age_bucket)
 
+##############################################################################
+#                           Track related functions                          #
+##############################################################################
+
+
+def get_track_age_bucket(track_release_date):
+    """
+    Get the "generation" of a track given its release date
+    :param track_release_date: int | format YYYYMMDD : date of release
+    :return: string | decade of release of the track
+    """
+
+    # Buckets defined thanks to :
+    BUCKETS = {
+        "old": (1950, 1979),
+        #"50s": (1950, 1959),
+        #"60s": (1960, 1969),
+        #"70s": (1970, 1979),
+        "80s": (1980, 1989),
+        "90s": (1990, 1999),
+        "00s": (2000, 2009),
+        "10s": (2010, 2019),
+    }
+
+    # Get release year of song: parse YYYYMMDD
+    year = track_release_date // 10000
+
+    # Deal with outliers (cf. dates distribution)
+    # TODO: remove once the data has been cleaned
+    if year == 3000:
+        return "00s"  # teenage years of most users
+    elif year < 1950:
+        return "old"
+    else:
+        # Get bucket
+        bucket = [k for (k, v) in BUCKETS.items() if v[0] <= year <= v[1]][0]
+        return bucket
+
+
+def parse_track_age_bucket(data):
+    """
+    Creates a new column in the dataframe containing a string corresponding
+    to the age bucket of the track
+    :param data: pd.Dataframe | dataframe containing column "release_date"
+    :return: pd.Dataframe | same dataframe with new columns added
+    """
+    if "release_date" not in data:
+        raise IOError("The input dataframe does not contain "
+                      "the column 'release_date'")
+
+    data["track_age_bucket"] = data["release_date"].map(get_track_age_bucket)
+
+
+def get_track_tempo_bucket(bpm):
+    """
+    Get the tempo of the track as defined by
+    https://fr.wikipedia.org/wiki/Battement_par_minute
+    :param tempo: int | Tempo of the track
+    :return: string | tempo of the track
+    """
+
+    # TODO: Make sure that the track dataframe does not contain bpm with value 0
+    # TODO: adjust to be more specific if needed
+    BUCKET_BPM = {
+        "very_slow": (0, 65),
+        "slow": (66, 80),
+        "moderate": (81, 99),
+        "fast": (100, 120),
+        "very_fast": (121, 1000)
+    }
+
+    bpm = round(bpm)
+
+    # Get bucket
+    bucket = [k for (k, v) in BUCKET_BPM.items() if v[0] <= bpm <= v[1]][0]
+
+    return bucket
+
+
+def parse_track_tempo_bucket(data):
+    """
+    Creates a new column in the dataframe containing a string corresponding
+    to the tempo of the track
+    :param data: pd.Dataframe | dataframe containing column "deezer_bpm"
+    :return: pd.Dataframe | same dataframe with new columns added
+    """
+    if "deezer_bpm" not in data:
+        raise IOError("The input dataframe does not contain "
+                      "the column 'deezer_bpm'")
+
+    data["track_tempo_bucket"] = data["deezer_bpm"].\
+        map(get_media_duration_bucket)
+
+
+def get_media_duration_bucket(media_duration):
+    """
+    Create very short/short/medium/long categories with media_duration
+    Parameters
+    ----------
+    df: pd.DataFrame | contains a column media_duration
+    """
+
+    BUCKET_DURATION = {
+        "very_short_duration": (0, 150),
+        "short_duration": (151, 209),
+        "medium_duration": (210, 299),
+        "long_duration": (300, 10000)
+    }
+
+    media_duration = round(media_duration)
+
+    bucket = [k for (k, v) in BUCKET_DURATION.items()
+              if v[0] <= media_duration <= v[1]][0]
+
+    return bucket
+
+
+def parse_media_duration_bucket(data):
+    """
+    Creates a new column in the dataframe containing a string corresponding
+    to the duration bucket of the track
+    :param data: pd.Dataframe | dataframe containing column "media_duration"
+    :return: pd.Dataframe | same dataframe with new columns added
+    """
+    if "media_duration" not in data:
+        raise IOError("The input dataframe does not contain "
+                      "the column 'media_duration'")
+
+    data["track_duration_bucket"] = data["media_duration"].\
+        map(get_media_duration_bucket)
+
 
 if __name__ == "__main__":
     path = "my/path/to/dataset"

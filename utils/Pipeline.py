@@ -1,6 +1,10 @@
 import pandas as pd
 from collections import Counter
 from time import time
+from utils.preprocessing import parse_release_date, parse_ts_listen, \
+                                parse_user_age, parse_moment_of_day, \
+                                parse_media_duration_bucket, \
+                                parse_track_age_bucket, parse_track_tempo_bucket
 
 
 class Pipeline():
@@ -72,6 +76,13 @@ class Pipeline():
         :return: None
         """
         self.dz_data = pd.merge(self.dz_data, self.sp_data, on=['media_id'])
+        parse_ts_listen(self.dz_data, drop_tmp=True)
+        parse_release_date(self.dz_data)
+        parse_moment_of_day(self.dz_data)
+        parse_track_tempo_bucket(self.dz_data)
+        parse_track_age_bucket(self.dz_data)
+        parse_media_duration_bucket(self.dz_data)
+        parse_user_age(self.dz_data)
 
     def describe(self):
         """
