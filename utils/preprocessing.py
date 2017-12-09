@@ -87,6 +87,29 @@ def get_moment_of_day(ts_listen):
 
     return moment
 
+def get_moment_of_day2(ts_listen):
+    """
+    Gets the moment of the day
+    :param ts_listen: int | timestamp of listening
+    :return: string | element of MOMENTS.keys()
+    """
+
+    # Define the moments of the day
+    MOMENTS = {
+        "early_morning": (0, 10),
+
+        "rest_of_day": (10, 23)
+    }
+
+    # Get the hour of listening
+    hour = datetime.datetime.strptime(convert_ts(ts_listen),
+                                      "%Y-%m-%d %H:%M:%S").hour
+
+    # Get the corresponding moment
+    moment = [k for (k, v) in MOMENTS.items() if v[0] <= hour <= v[1]][0]
+
+    return moment
+
 
 def parse_moment_of_day(data):
     """
@@ -101,6 +124,18 @@ def parse_moment_of_day(data):
 
     data["moment_of_day"] = data["ts_listen"].map(get_moment_of_day)
 
+def parse_moment_of_day2(data):
+    """
+    Creates a new column in the dataframe containing a string corresponding
+    to the moment of the day
+    :param data: pd.Dataframe | dataframe containing column "ts_listen"
+    :return: pd.Dataframe | same dataframe with new columns added
+    """
+    if "ts_listen" not in data:
+        raise IOError("The input dataframe does not contain "
+                      "the column 'ts_listen'")
+
+    data["moment_of_day"] = data["ts_listen"].map(get_moment_of_day2)
 
 ##############################################################################
 #                           User related functions                           #
