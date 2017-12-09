@@ -13,12 +13,14 @@ def hydrate_tracks(tracks):
     client = deezer.Client()
     result = []
 
-    for track_id in tracks:
+    for i, track_id in enumerate(tracks):
+        if i % 100 == 0:
+            print("==> %i songs fetched out of %i" % (i, len(tracks)))
         track = client.get_track(track_id)
 
         try:
             row = [track.id, track.rank, track.bpm,
-                   track.title, track.title_short]
+                   track.title, track.title_short, track.artist.name]
             result.append(row)
         except AttributeError:
             continue
@@ -63,14 +65,16 @@ if __name__ == '__main__':
 
     if 1:
         # Tracks
+        pre_tracks = pd.read_csv("../tracks.csv")
+        famous = pre_tracks.sort_values("rank", ascending=False).id.values[:20000]
         print("=====> Fetching tracks info from Deezer API")
-        tracks = train.media_id.values
-        tracks = np.unique(tracks)
-        track_data = hydrate_tracks(tracks)
+        #tracks = train.media_id.values
+        #tracks = np.unique(tracks)
+        track_data = hydrate_tracks(famous)
 
         df = pd.DataFrame(track_data)
-        df.columns = ['id', 'rank', 'bpm', 'title', 'title_short']
-        df.to_csv('tracks.csv', index=False)
+        df.columns = ['id', 'rank', 'bpm', 'title', 'title_short', 'artist']
+        df.to_csv('tracks_20k.csv', index=False)
 
     if 0:
         # Artists
