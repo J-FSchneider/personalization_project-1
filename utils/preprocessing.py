@@ -283,11 +283,11 @@ def get_track_danceability(danceability):
     :return: str | bucket where the track fells in
     """
     bins = {
-        "no": (0, 0.4),
-        "yes": (0.4, 1)
+        "no": (0, 0.40),
+        "yes": (0.41, 1)
     }
 
-    danceability = round(danceability)
+    danceability = round(danceability, 2)
 
     # Get bucket
     bucket = [k for (k, v) in bins.items() if v[0] <= danceability <= v[1]][0]
@@ -308,7 +308,7 @@ def get_track_valence(valence):
         "strong positive": (0.8, 1)
     }
 
-    valence = round(valence)
+    valence = round(valence, 2)
 
     # Get bucket
     bucket = [k for (k, v) in bins.items() if v[0] <= valence <= v[1]][0]
@@ -328,7 +328,7 @@ def parse_track_tempo_bucket(data):
                       "the column 'deezer_bpm'")
 
     data["track_tempo_bucket"] = data["deezer_bpm"].\
-        map(get_media_duration_bucket)
+        map(get_track_tempo_bucket)
 
 
 def parse_track_energy_bucket(data):
