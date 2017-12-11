@@ -255,6 +255,68 @@ def get_track_tempo_bucket(bpm):
     return bucket
 
 
+def get_track_energy(energy):
+    """
+    Bucketize the energy levels of the song
+    https://developer.spotify.com/web-api/object-model/#audio-features-object
+    :param energy: float | the energy measurement of the track
+    :return: str | bucket where the track fells in
+    """
+    energy_bins = {
+        "low": (0, 0.33),
+        "med": (0.34, 0.66),
+        "high": (0.67, 1)
+    }
+
+    energy = round(energy, 2)
+
+    # Get bucket
+    bucket = [k for (k, v) in energy_bins.items() if v[0] <= energy <= v[1]][0]
+
+    return bucket
+
+
+def get_track_danceability(danceability):
+    """
+    Determine if song is danceable or not
+    https://developer.spotify.com/web-api/object-model/#audio-features-object
+    :param danceability: float | the energy measurement of the track
+    :return: str | bucket where the track fells in
+    """
+    bins = {
+        "no": (0, 0.40),
+        "yes": (0.41, 1)
+    }
+
+    danceability = round(danceability, 2)
+
+    # Get bucket
+    bucket = [k for (k, v) in bins.items() if v[0] <= danceability <= v[1]][0]
+
+    return bucket
+
+
+def get_track_valence(valence):
+    """
+    Bucketize the "positiveness" of the song
+    https://developer.spotify.com/web-api/object-model/#audio-features-object
+    :param valence: float | the energy measurement of the track
+    :return: str | bucket where the track fells in
+    """
+    bins = {
+        "negative": (0, 0.3),
+        "positive": (0.31, 0.79),
+        "strong positive": (0.8, 1)
+    }
+
+    valence = round(valence, 2)
+
+    # Get bucket
+    bucket = [k for (k, v) in bins.items() if v[0] <= valence <= v[1]][0]
+
+    return bucket
+
+
 def parse_track_tempo_bucket(data):
     """
     Creates a new column in the dataframe containing a string corresponding
@@ -267,7 +329,22 @@ def parse_track_tempo_bucket(data):
                       "the column 'deezer_bpm'")
 
     data["track_tempo_bucket"] = data["deezer_bpm"].\
-        map(get_media_duration_bucket)
+        map(get_track_tempo_bucket)
+
+
+def parse_track_energy_bucket(data):
+    """
+    Creates a new column in the dataframe containing a string corresponding
+    to the energy buckect of the track
+    :param data: pd.Dataframe | dataframe containing column "deezer_bpm"
+    :return: pd.Dataframe | same dataframe with new columns added
+    """
+    if "energy" not in data:
+        raise IOError("The input dataframe does not contain "
+                      "the column 'deezer_bpm'")
+
+    data["track_energy_bucket"] = data["energy"].\
+        map(get_track_energy)
 
 
 def get_media_duration_bucket(media_duration):
