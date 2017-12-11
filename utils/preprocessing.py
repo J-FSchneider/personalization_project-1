@@ -254,6 +254,68 @@ def get_track_tempo_bucket(bpm):
     return bucket
 
 
+def get_track_energy(energy):
+    """
+    Bucketize the energy levels of the song
+    https://developer.spotify.com/web-api/object-model/#audio-features-object
+    :param energy: float | the energy measurement of the track
+    :return: str | bucket where the track fells in
+    """
+    energy_bins = {
+        "low": (0, 0.33),
+        "med": (0.34, 0.66),
+        "high": (0.67, 1)
+    }
+
+    energy = round(energy)
+
+    # Get bucket
+    bucket = [k for (k, v) in energy_bins.items() if v[0] <= energy <= v[1]][0]
+
+    return bucket
+
+
+def get_track_danceability(danceability):
+    """
+    Determine if song is danceable or not
+    https://developer.spotify.com/web-api/object-model/#audio-features-object
+    :param danceability: float | the energy measurement of the track
+    :return: str | bucket where the track fells in
+    """
+    bins = {
+        "no": (0, 0.4),
+        "yes": (0.4, 1)
+    }
+
+    danceability = round(danceability)
+
+    # Get bucket
+    bucket = [k for (k, v) in bins.items() if v[0] <= danceability <= v[1]][0]
+
+    return bucket
+
+
+def get_track_valence(valence):
+    """
+    Bucketize the "positiveness" of the song
+    https://developer.spotify.com/web-api/object-model/#audio-features-object
+    :param valence: float | the energy measurement of the track
+    :return: str | bucket where the track fells in
+    """
+    bins = {
+        "negative": (0, 0.3),
+        "positive": (0.31, 0.79),
+        "strong positive": (0.8, 1)
+    }
+
+    valence = round(valence)
+
+    # Get bucket
+    bucket = [k for (k, v) in bins.items() if v[0] <= valence <= v[1]][0]
+
+    return bucket
+
+
 def parse_track_tempo_bucket(data):
     """
     Creates a new column in the dataframe containing a string corresponding
