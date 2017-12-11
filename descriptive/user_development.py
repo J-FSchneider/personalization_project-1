@@ -161,7 +161,7 @@ print(user_pivot.head())
 user_pivot = user_pivot.merge(audio_df, on=song, how="left")
 user_mult = user_pivot[[user, song, m]]
 print("\nBelow is the user mult table")
-print(user_mult)
+print(user_mult.head())
 
 # Add to song_agg
 song_agg = pd.merge(song_agg, user_mult,
@@ -176,6 +176,14 @@ user_always = df_summ(df=song_agg,
                       rename=mpu,
                       target=mp,
                       criteria="sum")
+aux = df_summ(df=song_agg,
+              index=user,
+              rename="song_total",
+              target=s,
+              criteria="sum")
+user_always = user_always.merge(aux, on=user, how="left")
+user_always["total"] = np.sum(user_always["song_total"])
+user_always["per"] = user_always["song_total"] / user_always["total"]
 # =========================================================================
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Compute weights
