@@ -267,7 +267,7 @@ def get_track_energy(energy):
         "high": (0.67, 1)
     }
 
-    energy = round(energy)
+    energy = round(energy, 2)
 
     # Get bucket
     bucket = [k for (k, v) in energy_bins.items() if v[0] <= energy <= v[1]][0]
@@ -343,7 +343,7 @@ def parse_track_energy_bucket(data):
                       "the column 'deezer_bpm'")
 
     data["track_energy_bucket"] = data["energy"].\
-        map(get_media_duration_bucket)
+        map(get_track_energy)
 
 
 def get_media_duration_bucket(media_duration):
