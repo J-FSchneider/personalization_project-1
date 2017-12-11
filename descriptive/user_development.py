@@ -35,10 +35,10 @@ mpu = "always_per_user"
 # Load data
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Load data
-data = pd.read_csv("user_selection.csv", nrows=100)  # Contrained
+# data = pd.read_csv("user_selection.csv", nrows=100)  # Contrained
 # data = pd.read_csv("user_selection.csv")  # Only selected users
 # data = pd.read_csv("db.csv", nrows=100)  # Constrained
-# data = pd.read_csv("db.csv")
+data = pd.read_csv("db.csv")
 
 # Select columns
 column_selection = [user, song, time]
