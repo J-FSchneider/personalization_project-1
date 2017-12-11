@@ -96,9 +96,10 @@ def get_moment_of_day2(ts_listen):
 
     # Define the moments of the day
     MOMENTS = {
-        "early_morning": (0, 10),
+        "morning": (6, 14),
+        "aternoon_evening": (15, 23),
+        "late_night": (0, 5)
 
-        "rest_of_day": (11, 23)
     }
 
     # Get the hour of listening
