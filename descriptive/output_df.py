@@ -69,7 +69,7 @@ column_selection = ['genre_id',
                     'track_duration_bucket',
                     'user_age_bucket']
 df = df[column_selection]
-media_selection = [7, 8, 43, 51, 5943, 5188]
+media_selection = [7, 8, 43, 51, 1249, 3466, 5943]
 user_selection = df[df["user_id"].isin(media_selection)]
 user_selection.to_csv("./descriptive/user_selection.csv")
 # =========================================================================

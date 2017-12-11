@@ -35,7 +35,7 @@ ui = "user_ind"
 # data = pd.read_csv("user_selection.csv", nrows=100)  # Contrained
 data = pd.read_csv("user_selection.csv")  # Only selected users
 # data = pd.read_csv("db.csv", nrows=100)  # Constrained
-# data = pd.read_csv("db.csv")  # Constrained
+# data = pd.read_csv("db.csv")
 
 # Select columns
 column_selection = [user, song, time]
@@ -111,7 +111,16 @@ result[tp] = result[t] / result[tot]
 result[diff] = np.abs(result[sp] / result[tp] - 1)
 print("\nBelow is the result table with the diff colum")
 print(result.head(5))
-
+# =========================================================================
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Filter out noise
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# result = result[result[tp] > 0.1]
+result = result[result[s] > 1]
+# =========================================================================
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Compute weights
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Add the user/song weights
 result = result.merge(weights, on=[user, song], how="left")
 result[wdiff] = result[w] * result[diff]
@@ -119,9 +128,8 @@ print("\nWith weights")
 print(result.head(3))
 # =========================================================================
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Yield user/song and user "weighted difference" results
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Bring audio features
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 audio_df = pd.read_csv("audio_features.csv")
 
 # Select the audio features to include
@@ -136,7 +144,36 @@ audio_features = ['media_id',
 audio_df = audio_df[audio_features]
 print("\nHere are the audio features")
 print(audio_df.head(10))
+# =========================================================================
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Create user pivot
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# df_piv = result[result[sp] > 0.1]
+df_piv = result[[user, song, time, st]]
+print(df_piv.head())
+user_pivot = pd.pivot_table(df_piv,
+                            values=st,
+                            index=[user, song],
+                            columns=time)
+print("\nBelow if the user pivot table")
+print(user_pivot.head())
+user_pivot = user_pivot.fillna(0)
+user_pivot = user_pivot.applymap(lambda x: 1 if x > 1 else 0)
+user_pivot["mult"] = 1
+for column in user_pivot.columns:
+    user_pivot["mult"] = user_pivot["mult"] * user_pivot[column]
 
+user_pivot = user_pivot.reset_index()
+print("\nSecond version of the pivot table")
+print(user_pivot.head())
+user_pivot = user_pivot.merge(audio_df, on=song, how="left")
+user_pivot = user_pivot.merge(result[[user, song, w]],
+                              on=[user, song],
+                              how="left")
+# =========================================================================
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Construct final tables
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Do the differences aggregation
 user_song = df_summ(df=result,
                     index=[user, song],
@@ -153,6 +190,8 @@ final_master = result.merge(audio_df, on=song, how="left")
 # Print final results
 print("\nFinal user/song differences")
 print(user_song.head(4))
+
+result = result[result[s] > 1]
 user_ind = df_summ(df=result,
                    index=user,
                    rename=ui,
@@ -183,5 +222,7 @@ audio_df.to_excel(audio_writer, "Sheet1")
 usi_writer = pd.ExcelWriter("usi.xlsx")
 user_song.to_excel(usi_writer, "Sheeet1")
 
-# Output the user difference table
+# Output the user pivot
+piv_writer = pd.ExcelWriter("pivot.xlsx")
+user_pivot.to_excel(piv_writer, "Sheet1")
 # =========================================================================

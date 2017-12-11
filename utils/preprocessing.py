@@ -331,6 +331,21 @@ def parse_track_tempo_bucket(data):
         map(get_media_duration_bucket)
 
 
+def parse_track_energy_bucket(data):
+    """
+    Creates a new column in the dataframe containing a string corresponding
+    to the energy buckect of the track
+    :param data: pd.Dataframe | dataframe containing column "deezer_bpm"
+    :return: pd.Dataframe | same dataframe with new columns added
+    """
+    if "energy" not in data:
+        raise IOError("The input dataframe does not contain "
+                      "the column 'deezer_bpm'")
+
+    data["track_energy_bucket"] = data["energy"].\
+        map(get_media_duration_bucket)
+
+
 def get_media_duration_bucket(media_duration):
     """
     Create very short/short/medium/long categories with media_duration
