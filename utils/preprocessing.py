@@ -123,7 +123,7 @@ def parse_moment_of_day(data):
         raise IOError("The input dataframe does not contain "
                       "the column 'ts_listen'")
 
-    data["moment_of_day"] = data["ts_listen"].map(get_moment_of_day)
+    data["moment_of_day"] = data["ts_listen"].map(get_moment_of_day2)
 
 def parse_moment_of_day2(data):
     """
