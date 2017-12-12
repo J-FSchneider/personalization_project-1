@@ -15,8 +15,8 @@ def tod_pivot(data, audio_df, time_threshold=0.1):
     """
     This function analysis the song's that the users
     listen to throughout all the moments of day
-    :param data: pd.DataFrame|  the pd.DataFrame outputed from Pipeline
-    :param audio_df: pd.DataFrame | a pd.DataFrame containing the spotify
+    :param data: pd.DataFrame|  the pd.DataFrame outputted from Pipeline
+    :param audio_df: pd.DataFrame | a pd.DataFrame containing Spotify's
                 audio features
     :param time_threshold: float | the % of user activity that needs
                         to concentrate in that moment of day to be
@@ -107,7 +107,7 @@ def tod_pivot(data, audio_df, time_threshold=0.1):
                          on=[user, time],
                          how="left")
     user_melt[indi] = user_melt["value"][user_melt[tr] == 1]
-    user_melt = user_melt.fillna(0)
+    user_melt = user_melt.fillna(1)
     user_melt[indi] = \
         user_melt[indi].apply(lambda x: 1 if x > 0 else 0)
     user_melt = user_melt[[user, song, time, indi]]
@@ -140,6 +140,6 @@ def tod_pivot(data, audio_df, time_threshold=0.1):
     user_final = pd.merge(user_final, user_song_rel,
                           on=user,
                           how="left")
-    final = final.sort_values(by=[user, s], ascending=[0, 1])
+    final = final.sort_values(by=[user, s], ascending=[1, 0])
     return user_final, final
 # =========================================================================
