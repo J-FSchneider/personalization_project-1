@@ -148,7 +148,7 @@ user_melt = pd.merge(user_melt, time_rel,
                      on=[user, time],
                      how="left")
 user_melt[indi] = user_melt["value"][user_melt[tr] == 1]
-user_melt = user_melt.fillna(0)
+user_melt = user_melt.fillna(1)
 user_melt[indi] = user_melt[indi].apply(lambda x: 1 if x > 0 else 0)
 print("\nThe new user melt")
 print(user_melt.head(20))
