@@ -3,6 +3,7 @@
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 import pandas as pd
 import numpy as np
+from descriptive.tod_analysis import tod_pivot
 from utils.df_trans import df_summ
 from utils.df_trans import df_tot
 # =========================================================================
@@ -201,4 +202,18 @@ tmp = np.sum(user_final["final"] * user_final[srp])
 aux = np.sum(user_final["final"] / len(user_final["final"]))
 print("\nThe results at an weighted aggregate level: {:2.2f}".format(tmp))
 print("\nThe results at a aggregate level: {:2.2f}".format(aux))
+# =========================================================================
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Check that function is working properly
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+uf, f = tod_pivot(data=data,
+                  audio_df=audio_df,
+                  time_threshold=time_threshold)
+print("\nBelow is the final table")
+print(f.head())
+print("\n[Check] The final results at a user level")
+print(uf.head(20))
+tmp = np.sum(uf["final"] * uf[srp])
+print("\n[Check] The results at an weighted aggregate "
+      "level: {:2.2f}".format(tmp))
 # =========================================================================
