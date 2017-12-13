@@ -112,6 +112,49 @@ def get_moment_of_day2(ts_listen):
     return moment
 
 
+def get_moment_of_week(ts_listen):
+
+
+    """
+    Gets the moment of the day along with weekday/weekend specifications
+    :param ts_listen: int | timestamp of listening
+    :return: string | element of MOMENTS.keys()
+    """
+     #TODO:Define the bins for weekend and weekday
+
+    # Define the moments of the day
+    Weekday_MOMENTS = {
+        "weekday_morning": (6, 14),
+        "weekday_afernoon_to_evening": (15, 23),
+        "weekday_late_night": (0, 5)
+    }
+
+    # Define the moments of the day for weekends
+
+    Weekend_MOMENTS = {
+        "weekend_morning": (6, 14),
+        "weekend_aternoon_evening": (15, 23),
+        "weekend_late_night": (0, 5)
+    }
+
+    # Get the hour of listening
+    hour = datetime.datetime.strptime(convert_ts(ts_listen),
+                                      "%Y-%m-%d %H:%M:%S").hour
+    # Get the day of listening
+
+    day = datetime.datetime.fromtimestamp(ts_listen).strftime("%A")
+
+    # Checking for weekend and getting corresponding bucket
+    if day == 'Friday' or day == 'Saturday' or day == 'Sunday':
+        moment = \
+        [k for (k, v) in Weekend_MOMENTS.items() if v[0] <= hour <= v[1]][0]
+    else:
+        moment = \
+        [k for (k, v) in Weekday_MOMENTS.items() if v[0] <= hour <= v[1]][0]
+
+    return moment
+
+
 def parse_moment_of_day(data):
     """
     Creates a new column in the dataframe containing a string corresponding
