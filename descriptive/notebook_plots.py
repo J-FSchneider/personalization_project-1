@@ -2,6 +2,9 @@
 # Imports
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 import pandas as pd
+import numpy as np
+# import matplotlib.pyplot as plt
+from descriptive.tod_analysis import tod_pivot
 # =========================================================================
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Load data
@@ -22,9 +25,7 @@ user = "user_id"
 song = "media_id"
 time = "moment_of_day"
 srp = "song_rel_per"
-day = 'day_listen'
-hour = 'hour_listen'
-column_selection = [user, song, time, day, hour]
+column_selection = [user, song, time]
 data = data[column_selection]
 # =========================================================================
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -42,21 +43,45 @@ audio_features = ['media_id',
                   'danceability',
                   'valence']
 audio_df = audio_df[audio_features]
+print("\nHere are the audio features")
+print(audio_df.head(5))
 # =========================================================================
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# ...
+# Run Pivot
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-data = data.merge(audio_df,
-                  on=song,
-                  how="left")
+user_final, final = tod_pivot(data=data,
+                              audio_df=audio_df,
+                              time_threshold=0.05)
+print("\nBelow is the final table")
+print(final.head())
+print("\nThe final results at a user level")
+print(user_final.head(20))
+tmp = np.sum(user_final["final"] * user_final[srp])
+print("\nThe results at an weighted aggregate "
+      "level: {:2.2f}".format(tmp))
 # =========================================================================
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Output Excel with different sheets by selected users
+# Output Excels
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-writer = pd.ExcelWriter("user_cases.xlsx")
-user_sel = [2, 13, 20, 3, 19, 41]
-for u in user_sel:
-    tmp = data[data[user] == u]
-    name = "user " + str(u)
-    tmp.to_excel(writer, name)
+# Note:: for a large data set the second excel will not output
+pivot = pd.ExcelWriter("pivot_analysis.xlsx")
+# user_final.to_excel(pivot, "User_Analysis")
+final.to_excel(pivot, "User_Song Analysis")
+# =========================================================================
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Plot time threshold impact
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# thresholds = np.linspace(0, 0.21, num=10)
+# n = len(thresholds)
+# x = np.zeros((n, 1))
+# i = 0
+# for thres in thresholds:
+#     tmp, _ = tod_pivot(data=data,
+#                        audio_df=audio_df,
+#                        time_threshold=thres)
+#     x[i] = np.sum(tmp["final"] * tmp[srp])
+#     i += 1
+#
+# plt.plot(thresholds, x)
+# plt.show()
 # =========================================================================
