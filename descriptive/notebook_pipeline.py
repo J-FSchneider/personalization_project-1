@@ -29,7 +29,7 @@ days = [21, 23, 25, 26]  # for user 7
 # user_day = pipe.user_day(user_id=612, days=[22])
 user_day = pipe.user_day(user_id=7, song_id=18190270, days=days)
 print("\nBelow is the user / day analysis")
-print(user_day.head())
+print(user_day)
 # =========================================================================
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Get user pivot table example
