@@ -193,10 +193,22 @@ class Pipeline:
         return tmp
 
     def user_day(self, user_id, song_id, days):
-        mask = (self.dz_data_selected["user_id"] == user_id) & \
-               (self.dz_data_selected["day_listen"].isin(days)) & \
-               (self.dz_data_selected["media_id"] == song_id)
-        tmp = self.dz_data_selected[mask]
+        mask = (self.dz_data["user_id"] == user_id) & \
+               (self.dz_data["day_listen"].isin(days)) & \
+               (self.dz_data["media_id"] == song_id)
+        tmp = self.dz_data[mask]
+        column_selection = ['user_id',
+                            'media_id',
+                            'moment_of_day',
+                            'day_listen',
+                            'hour_listen',
+                            'spotify_name',
+                            'spotify_artist',
+                            'energy',
+                            'danceability',
+                            'tempo',
+                            'valence']
+        tmp = tmp[column_selection]
         tmp = tmp.sort_values(by="day_listen")
         return tmp
 
