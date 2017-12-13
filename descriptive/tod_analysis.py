@@ -143,3 +143,86 @@ def tod_pivot(data, audio_df, time_threshold=0.1):
     final = final.sort_values(by=[user, s], ascending=[1, 0])
     return user_final, final
 # =========================================================================
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Time Aggregation Function
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+def time_table(data, user_id, song_id, time_id, time_threshold=0.1):
+    # Define variable names
+    t = "time_sum"
+    tp = "time_per"
+    tr = "time_rel"
+    tot = "total"
+
+    # Create granular user/song/time table
+    result = df_summ(df=data,
+                     index=[user_id, time_id],
+                     rename=t,
+                     target=song_id,
+                     criteria="count")
+    result = df_tot(df=result,
+                    index=user_id,
+                    rename=tot,
+                    target=t,
+                    criteria="sum")
+    result[tp] = result[t] / result[tot]
+    result[tr] = \
+        result[tp].apply(lambda x: 1 if x > time_threshold else 0)
+    return result
+# =========================================================================
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# User Pivot Function
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+def u_pivot(data, user_id, song_id, time_id, time_rel, time_vars):
+    # Set new variables
+    st = "st_count"
+    tr = "time_rel"
+    indi = "indicator"
+    m = "mult"
+
+    # Create master table
+    master = df_summ(df=data,
+                     index=[user_id, song_id, time_id],
+                     rename=st,
+                     target=song_id,
+                     criteria="count")
+    # Create user pivot
+    u_piv = pd.pivot_table(master,
+                           values=st,
+                           index=[user_id, song_id],
+                           columns=time_id)
+    with_nans = u_piv
+    u_piv = u_piv.fillna(0)
+    u_piv = u_piv.reset_index()
+
+    # Undo pivot
+    u_melt = pd.melt(u_piv,
+                     id_vars=[user_id, song_id],
+                     value_vars=time_vars)
+
+    # Identify time relevant columns
+    u_melt = pd.merge(u_melt, time_rel,
+                      on=[user_id, time_id],
+                      how="left")
+    u_melt[indi] = u_melt["value"][u_melt[tr] == 1]
+    u_melt = u_melt.fillna(1)
+    u_before = u_melt
+    u_melt[indi] = \
+        u_melt[indi].apply(lambda x: 1 if x > 0 else 0)
+    u_melt = u_melt[[user_id, song_id, time_id, indi]]
+    u_piv = pd.pivot_table(u_melt,
+                           values=indi,
+                           index=[user_id, song_id],
+                           columns=time_id)
+
+    # Get multiplier column
+    u_piv[m] = 1
+    for column in u_piv.columns:
+        u_piv[m] = u_piv[m] * u_piv[column]
+
+    u_piv = u_piv.reset_index()
+    return u_piv, u_before, with_nans
+# =========================================================================
