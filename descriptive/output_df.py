@@ -11,7 +11,8 @@ from utils.df_trans import df_summ
 # Run pipeline
 spotify_file = "./descriptive/SpotifyAudioFeatures_clean.csv"
 data_file = "./descriptive/train.csv"
-data = pd.read_csv(data_file, nrows=100)  # to check headers
+data = pd.read_csv(data_file, nrows=1000)  # to check headers
+data.to_csv("./descriptive/db_nrows.csv", chunksize=100)
 pipe = Pipeline(deezer_path=data_file, spotify_path=spotify_file)
 df = pipe.make()
 
