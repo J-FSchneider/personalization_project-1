@@ -1,5 +1,6 @@
 import pandas as pd
 from collections import Counter
+from descriptive.tod_analysis import df_summ, time_table, u_pivot, tod_pivot
 from time import time
 from utils.preprocessing import parse_release_date, parse_ts_listen, \
                                 parse_user_age, parse_moment_of_day, \
@@ -8,7 +9,7 @@ from utils.preprocessing import parse_release_date, parse_ts_listen, \
                                 parse_track_energy_bucket
 
 
-class Pipeline():
+class Pipeline:
     def __init__(self, deezer_path=None, spotify_path=None,
                  user_thres=None, item_thres=None,
                  verbose=True):
@@ -22,6 +23,8 @@ class Pipeline():
         self.keep_users = []
         self.sp_data = None
         self.dz_data = None
+        self.dz_data_selected = None
+        self.sp_data_selected = None
         self.verbose = verbose
 
     def load_data(self):
@@ -126,6 +129,117 @@ class Pipeline():
         self.dz_data = self.dz_data.sample(frac=1).reset_index(drop=True)
         print("Running time: {} seconds".format(int(time() - t0)))
         return self.dz_data
+
+    def make_selected(self):
+        """
+        Pipeline in itself. Runs all the methods above to generate the final
+        data frame to be used. It also selects specific columns for the analysis
+        :return:  pd.DataFrame | Data frame to use by the model with selected
+                            columns
+        """
+        self.load_data()
+        self.get_keep_media()
+        self.get_keep_users()
+        self.filter_data()
+        self.add_features()
+        if self.verbose:
+            self.describe()
+        self.dz_data = self.dz_data.sample(frac=1).reset_index(drop=True)
+
+        column_selection = ['user_id',
+                            'media_id',
+                            'moment_of_day',
+                            'day_listen',
+                            'hour_listen',
+                            'spotify_name',
+                            'spotify_artist',
+                            'energy',
+                            'danceability',
+                            'tempo',
+                            'valence']
+        data = self.dz_data[self.dz_data["is_listened"] == 1]
+        data = data[column_selection]
+        self.dz_data_selected = data
+        return data
+
+    def audio_selected(self):
+        audio_features = ['media_id',
+                          'spotify_name',
+                          'spotify_artist',
+                          'energy',
+                          'tempo',
+                          'danceability',
+                          'valence']
+        self.sp_data_selected = self.sp_data[audio_features]
+
+    def user_song(self, user_id, songs):
+        mask = (self.dz_data_selected["user_id"] == user_id) & \
+               (self.dz_data_selected["media_id"].isin(songs))
+        tmp = self.dz_data_selected[mask]
+        tmp = df_summ(df=tmp,
+                      index=["user_id",
+                             "media_id",
+                             "moment_of_day",
+                             "hour_listen",
+                             'spotify_name',
+                             'spotify_artist',
+                             'energy',
+                             'danceability',
+                             'tempo',
+                             'valence'],
+                      rename="times_listened_in_month",
+                      target="media_id",
+                      criteria="count")
+        return tmp
+
+    def user_day(self, user_id, song_id, days):
+        mask = (self.dz_data_selected["user_id"] == user_id) & \
+               (self.dz_data_selected["day_listen"].isin(days)) & \
+               (self.dz_data_selected["media_id"] == song_id)
+        tmp = self.dz_data_selected[mask]
+        tmp = tmp.sort_values(by="day_listen")
+        return tmp
+
+    def get_user_pivot(self):
+        time_agg = time_table(data=self.dz_data_selected,
+                              user_id="user_id",
+                              song_id="media_id",
+                              time_id="moment_of_day",
+                              time_threshold=0.05)
+        time_rel = time_agg[["user_id", "moment_of_day", "time_rel"]]
+        time_vars = time_agg["moment_of_day"].unique()
+        _, _, w_nans = u_pivot(data=self.dz_data_selected,
+                               user_id="user_id",
+                               song_id="media_id",
+                               time_id="moment_of_day",
+                               time_rel=time_rel,
+                               time_vars=time_vars)
+        return w_nans
+
+    def run_user_analysis(self, user_id):
+        self.audio_selected()
+        _, fin = tod_pivot(data=self.dz_data_selected,
+                           audio_df=self.sp_data_selected,
+                           time_threshold=0.05)
+        u = fin[["user_id",
+                 "media_id",
+                 "spotify_name",
+                 "spotify_artist",
+                 "mult",
+                 "song_sum",
+                 "total",
+                 "weights"]]
+        u = u[u["user_id"] == user_id]
+        u = u.sort_values(by="weights", ascending=False)
+        return u
+
+    def run_analysis(self):
+        self.audio_selected()
+        u_fin, _ = tod_pivot(data=self.dz_data_selected,
+                             audio_df=self.sp_data_selected,
+                             time_threshold=0.05)
+        return u_fin
+
 
 if __name__ == "__main__":
     # Here's an example of how to use this class to generate the data
