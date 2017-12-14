@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from collections import Counter
 from descriptive.tod_analysis import df_summ, time_table, u_pivot, tod_pivot
 from time import time
@@ -130,7 +131,7 @@ class Pipeline:
         print("Running time: {} seconds".format(int(time() - t0)))
         return self.dz_data
 
-    def make_selected(self):
+    def make_selected(self, columns=None):
         """
         Pipeline in itself. Runs all the methods above to generate the final
         data frame to be used. It also selects specific columns for the analysis
@@ -146,17 +147,25 @@ class Pipeline:
             self.describe()
         self.dz_data = self.dz_data.sample(frac=1).reset_index(drop=True)
 
-        column_selection = ['user_id',
-                            'media_id',
-                            'moment_of_day',
-                            'day_listen',
-                            'hour_listen',
-                            'spotify_name',
-                            'spotify_artist',
-                            'energy',
-                            'danceability',
-                            'tempo',
-                            'valence']
+        if columns is None:
+            column_selection = ['user_id',
+                                'media_id',
+                                'moment_of_day',
+                                'day_listen',
+                                'hour_listen',
+                                'spotify_name',
+                                'spotify_artist',
+                                'energy',
+                                'danceability',
+                                'tempo',
+                                'valence']
+
+        else:
+            if not isinstance(columns, (list, np.ndarray)):
+                raise IOError("The parameter 'columns' should be a list or"
+                              "an np.array.")
+            column_selection = columns
+
         data = self.dz_data[self.dz_data["is_listened"] == 1]
         data = data[column_selection]
         self.dz_data_selected = data
