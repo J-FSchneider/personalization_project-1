@@ -87,6 +87,7 @@ def get_moment_of_day(ts_listen):
 
     return moment
 
+
 def get_moment_of_day2(ts_listen):
     """
     Gets the moment of the day
@@ -113,8 +114,6 @@ def get_moment_of_day2(ts_listen):
 
 
 def get_moment_of_week(ts_listen):
-
-
     """
     Gets the moment of the day along with weekday/weekend specifications
     :param ts_listen: int | timestamp of listening
@@ -166,7 +165,8 @@ def parse_moment_of_day(data):
         raise IOError("The input dataframe does not contain "
                       "the column 'ts_listen'")
 
-    data["moment_of_day"] = data["ts_listen"].map(get_moment_of_day2)
+    data["moment_of_day"] = data["ts_listen"].map(get_moment_of_day)
+
 
 def parse_moment_of_day2(data):
     """
@@ -181,9 +181,24 @@ def parse_moment_of_day2(data):
 
     data["moment_of_day"] = data["ts_listen"].map(get_moment_of_day2)
 
+
+def parse_moment_of_week(data):
+    """
+    Creates a new column in the dataframe containing a string corresponding
+    to the moment of the day
+    :param data: pd.Dataframe | dataframe containing column "ts_listen"
+    :return: pd.Dataframe | same dataframe with new columns added
+    """
+    if "ts_listen" not in data:
+        raise IOError("The input dataframe does not contain "
+                      "the column 'ts_listen'")
+
+    data["moment_of_week"] = data["ts_listen"].map(get_moment_of_week)
+
 ##############################################################################
 #                           User related functions                           #
 ##############################################################################
+
 
 def get_user_age_bucket(user_age):
     """
@@ -327,8 +342,8 @@ def get_track_danceability(danceability):
     :return: str | bucket where the track fells in
     """
     bins = {
-        "no": (0, 0.40),
-        "yes": (0.41, 1)
+        "no-dance": (0, 0.40),
+        "yes-dance": (0.41, 1)
     }
 
     danceability = round(danceability, 2)
@@ -337,6 +352,57 @@ def get_track_danceability(danceability):
     bucket = [k for (k, v) in bins.items() if v[0] <= danceability <= v[1]][0]
 
     return bucket
+
+
+def parse_track_danceability_bucket(data):
+    """
+    Creates a new column in the dataframe containing a string corresponding
+    to the energy buckect of the track
+    :param data: pd.Dataframe | dataframe containing column "deezer_bpm"
+    :return: pd.Dataframe | same dataframe with new columns added
+    """
+    if "danceability" not in data:
+        raise IOError("The input dataframe does not contain "
+                      "the column 'danceability'")
+
+    data["track_danceability_bucket"] = data["danceability"].\
+        map(get_track_danceability)
+
+
+def get_track_speechiness(speech):
+    """
+    Determine if song is danceable or not
+    https://developer.spotify.com/web-api/object-model/#audio-features-object
+    :param danceability: float | the energy measurement of the track
+    :return: str | bucket where the track fells in
+    """
+    bins = {
+        "low-speech": (0, 0.33),
+        "medium-speech": (0.34, 0.66),
+        "high-speech": (0.67, 1)
+    }
+
+    speech = round(speech, 2)
+
+    # Get bucket
+    bucket = [k for (k, v) in bins.items() if v[0] <= speech <= v[1]][0]
+
+    return bucket
+
+
+def parse_track_speechiness_bucket(data):
+    """
+    Creates a new column in the dataframe containing a string corresponding
+    to the energy buckect of the track
+    :param data: pd.Dataframe | dataframe containing column "deezer_bpm"
+    :return: pd.Dataframe | same dataframe with new columns added
+    """
+    if "speechiness" not in data:
+        raise IOError("The input dataframe does not contain "
+                      "the column 'speechiness'")
+
+    data["track_speechiness_bucket"] = data["speechiness"].\
+        map(get_track_speechiness)
 
 
 def get_track_valence(valence):
@@ -358,6 +424,21 @@ def get_track_valence(valence):
     bucket = [k for (k, v) in bins.items() if v[0] <= valence <= v[1]][0]
 
     return bucket
+
+
+def parse_track_valence_bucket(data):
+    """
+    Creates a new column in the dataframe containing a string corresponding
+    to the energy buckect of the track
+    :param data: pd.Dataframe | dataframe containing column "deezer_bpm"
+    :return: pd.Dataframe | same dataframe with new columns added
+    """
+    if "valence" not in data:
+        raise IOError("The input dataframe does not contain "
+                      "the column 'valence'")
+
+    data["track_valence_bucket"] = data["valence"].\
+        map(get_track_valence)
 
 
 def parse_track_tempo_bucket(data):
@@ -384,7 +465,7 @@ def parse_track_energy_bucket(data):
     """
     if "energy" not in data:
         raise IOError("The input dataframe does not contain "
-                      "the column 'deezer_bpm'")
+                      "the column 'energy'")
 
     data["track_energy_bucket"] = data["energy"].\
         map(get_track_energy)
