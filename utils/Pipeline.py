@@ -40,12 +40,12 @@ class Pipeline:
         Loads data sets from the indicated paths
         :return: None
         """
+        self.sp_data = pd.read_csv(self.sp_path)
+        self.dz_data = pd.read_csv(self.dz_path)
+
         if self.use_sample:
             self.sp_data = pd.read_csv(self.sp_path)
             self.dz_data = pd.read_csv(self.sample_path)
-        else:
-            self.sp_data = pd.read_csv(self.sp_path)
-            self.dz_data = pd.read_csv(self.dz_path)
 
     def get_keep_media(self):
         """
