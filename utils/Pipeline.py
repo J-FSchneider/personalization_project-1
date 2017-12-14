@@ -15,12 +15,16 @@ from utils.preprocessing import parse_release_date, parse_ts_listen, \
 
 class Pipeline:
     def __init__(self, deezer_path=None, spotify_path=None,
+                 sample_path=None,
+                 use_sample = False,
                  user_thres=None, item_thres=None,
                  verbose=True):
         if deezer_path is None or spotify_path is None:
             raise IOError("You must indicate the paths to both data sets.")
         self.dz_path = deezer_path
         self.sp_path = spotify_path
+        self.sample_path = sample_path
+        self.use_sample = use_sample
         self.user_thres = user_thres
         self.item_thres = item_thres
         self.keep_media = []
@@ -36,8 +40,12 @@ class Pipeline:
         Loads data sets from the indicated paths
         :return: None
         """
-        self.sp_data = pd.read_csv(self.sp_path)
-        self.dz_data = pd.read_csv(self.dz_path)
+        if self.use_sample:
+            self.sp_data = pd.read_csv(self.sp_path)
+            self.dz_data = pd.read_csv(self.sample_path)
+        else:
+            self.sp_data = pd.read_csv(self.sp_path)
+            self.dz_data = pd.read_csv(self.dz_path)
 
     def get_keep_media(self):
         """
