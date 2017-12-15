@@ -11,6 +11,7 @@ data_file = "train.csv"
 # Create sample
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 data = pd.read_csv(data_file)
+data = data[data["is_listened"] == 1]
 sample = hit_rate_matrix_popular_items(data)
 print(sample.head())
 songs = list(sample.columns)
