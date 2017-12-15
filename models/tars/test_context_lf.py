@@ -43,7 +43,7 @@ context_lf.fit()
 # Note:: when it ends up being a np.array after the model is ran
 U = context_lf.U
 print("\nThe type of U is")
-print(type(U))
+print(type(U[0]))
 V = context_lf.V
 print("\nThe type of V is")
 print(type(V))
