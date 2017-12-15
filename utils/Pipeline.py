@@ -4,7 +4,7 @@ from collections import Counter
 from descriptive.tod_analysis import df_summ, time_table, u_pivot, tod_pivot
 from time import time
 from utils.preprocessing import parse_release_date, parse_ts_listen, \
-                                parse_user_age, parse_moment_of_day, \
+                                parse_user_age, parse_moment_of_day2, \
                                 parse_media_duration_bucket, \
                                 parse_track_age_bucket, parse_track_tempo_bucket, \
                                 parse_track_energy_bucket, \
@@ -95,6 +95,7 @@ class Pipeline:
         parse_ts_listen(self.dz_data, drop_tmp=True)
         parse_release_date(self.dz_data)
         parse_moment_of_week(self.dz_data)
+        parse_moment_of_day2(self.dz_data)
         parse_track_tempo_bucket(self.dz_data)
         parse_track_age_bucket(self.dz_data)
         parse_media_duration_bucket(self.dz_data)
