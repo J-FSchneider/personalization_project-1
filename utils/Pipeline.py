@@ -6,7 +6,8 @@ from time import time
 from utils.preprocessing import parse_release_date, parse_ts_listen, \
                                 parse_user_age, parse_moment_of_day2, \
                                 parse_media_duration_bucket, \
-                                parse_track_age_bucket, parse_track_tempo_bucket, \
+                                parse_track_age_bucket, \
+                                parse_track_tempo_bucket, \
                                 parse_track_energy_bucket, \
                                 parse_track_danceability_bucket, \
                                 parse_track_speechiness_bucket, \
@@ -16,7 +17,7 @@ from utils.preprocessing import parse_release_date, parse_ts_listen, \
 class Pipeline:
     def __init__(self, deezer_path=None, spotify_path=None,
                  sample_path=None,
-                 use_sample = False,
+                 use_sample=False,
                  user_thres=None, item_thres=None,
                  verbose=True):
         if deezer_path is None or spotify_path is None:

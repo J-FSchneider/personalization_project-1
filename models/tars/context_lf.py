@@ -126,3 +126,24 @@ class ContextLF:
         top_k = np.array(top_items.nlargest(k, 0).index)
 
         return top_k
+
+    def song_similarity(self, songs):
+
+        """
+        The function takes in a list of recommended songs and outputs a list
+        of serendipitous songs by genre. If the list of serendipitous songs is
+        too short(<= 5), we output the original recommendations.
+
+
+        :param songs: list of recommended songs
+        :return: list of serendipitous songs
+        """
+        data = self.data
+        data = data[data.media_id.isin(songs)]
+        data = data.drop_duplicates(['media_id'], keep='first')
+        data = data[['media_id', 'genre_id']]
+        data = data.drop_duplicates(['genre_id'], keep='first')
+        if len(data['media_id']) >= 5:
+            return list(data['media_id'])
+        else:
+            return songs
