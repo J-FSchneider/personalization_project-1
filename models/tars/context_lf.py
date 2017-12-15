@@ -134,6 +134,6 @@ class ContextLF:
         data = data[['media_id', 'genre_id']]
         data = data.drop_duplicates(['genre_id'], keep='first')
         if len(data['media_id']) >= 5:
-            return data['media_id']
+            return list(data['media_id'])
         else:
             return songs
