@@ -13,7 +13,7 @@ def id_to_name(spotify_data, song_id):
     :param song_id: list| List of recommended songs
     :return: List| List of song anmes
     """
-    spotify_data = spotify_data[spotify_data.media_id.isin(songs)]\
+    spotify_data = spotify_data[spotify_data.media_id.isin(song_id)]\
         .drop_duplicates(['media_id'], keep='first')
 
     spotify_data = spotify_data['spotify_name']
