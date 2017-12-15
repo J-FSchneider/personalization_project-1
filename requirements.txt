@@ -4,4 +4,4 @@ surprise==1.0.4
 Numpy==1.13.3
 time=16.3
 matplotlib==2.1.1
-
+spotipy==2.0
