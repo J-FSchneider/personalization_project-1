@@ -77,7 +77,7 @@ class ContextLF:
                 V_new = V * (1 - learning_rate * regularization) + learning_rate * V_update
                 U = U_new
                 V = V_new
-                if verbose and i%100 == 0:
+                if verbose and t%100 == 0:
                     print('Loss on iteration ' + str(t) + ': ' + str(J))
 
                 # Convergence criteria
