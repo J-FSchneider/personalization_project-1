@@ -6,12 +6,12 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 
 
-class CrossFeaturesModel():
+class CrossFeaturesModel:
     def __init__(self, data=None, target=None,
                  estimator='logistic', cv=3, verbose=False):
         if data is None or target is None:
-            raise IOError ("You should indicate both the train set "
-                           "and the target column.")
+            raise IOError("You should indicate both the train set "
+                          "and the target column.")
         self.data = data
         self.target = target
         self.cv = cv
@@ -38,8 +38,8 @@ class CrossFeaturesModel():
         :return: None
         """
         if self.best_estimator is None:
-            raise IOError \
-                ("You need to train your model first. Call method 'train'.")
+            raise IOError("You need to train your model first. "
+                          "Call method 'train'.")
 
     def grid_search_params(self):
         """
@@ -47,16 +47,16 @@ class CrossFeaturesModel():
         :return: dict | dictionary of parameters to try in grid search
         """
         if self.estimator == "logistic":
-             params = {
+            params = {
                 'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000],
                 'penalty': ['l1', 'l2'],
                 'class_weight': [None, 'balanced']
-             }
-             return params
+            }
+            return params
 
         elif self.estimator == "random_forest":
             # TODO: complete
-             return {}
+            return {}
 
     def train(self):
         """
@@ -117,8 +117,8 @@ class CrossFeaturesModel():
         """
         self._check_trained()
         if self.best_estimator is None:
-            raise IOError \
-                ("You must first do the grid search to obtain the best model.")
+            raise IOError("You must first do the grid search "
+                          "to obtain the best model.")
 
         if self.estimator == "logistic":
             zipped = list(zip(self.data.columns, self.best_estimator.coef_[0]))
@@ -136,8 +136,8 @@ class CrossFeaturesModel():
         """
         self._check_trained()
         if top > 20:
-            raise IOError \
-                ("Too much features to plot. Please select parameter top < 20")
+            raise IOError("Too much features to plot. "
+                          "Please select parameter top < 20")
 
         features = self.get_most_important_features(top)
         name, weights = list(zip(*features))
@@ -145,5 +145,5 @@ class CrossFeaturesModel():
 
         plt.bar(x_pos, weights, align='center')
         plt.xticks(x_pos, name, rotation='vertical')
-        plt.ylabel( 'Top %i features weights' % top)
+        plt.ylabel('Top %i features weights' % top)
         plt.show()
