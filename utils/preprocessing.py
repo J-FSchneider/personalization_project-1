@@ -97,9 +97,9 @@ def get_moment_of_day2(ts_listen):
 
     # Define the moments of the day
     MOMENTS = {
-        "morning": (6, 14),
-        "aternoon_evening": (15, 23),
-        "late_night": (0, 5)
+        "morning": (5, 14),
+        "afternoon_evening": (15, 23),
+        "late_night": (0, 4)
 
     }
 
@@ -123,17 +123,17 @@ def get_moment_of_week(ts_listen):
 
     # Define the moments of the day
     Weekday_MOMENTS = {
-        "weekday_morning": (6, 14),
-        "weekday_afernoon_to_evening": (15, 23),
-        "weekday_late_night": (0, 5)
+        "weekday_morning": (5, 14),
+        "weekday_afternoon_to_evening": (15, 23),
+        "weekday_late_night": (0, 4)
     }
 
     # Define the moments of the day for weekends
 
     Weekend_MOMENTS = {
-        "weekend_morning": (6, 14),
-        "weekend_aternoon_evening": (15, 23),
-        "weekend_late_night": (0, 5)
+        "weekend_morning": (5, 14),
+        "weekend_afternoon_evening": (15, 23),
+        "weekend_late_night": (0, 4)
     }
 
     # Get the hour of listening
@@ -141,10 +141,10 @@ def get_moment_of_week(ts_listen):
                                       "%Y-%m-%d %H:%M:%S").hour
     # Get the day of listening
 
-    day = datetime.datetime.fromtimestamp(ts_listen).strftime("%A")
+    day = datetime.datetime.fromtimestamp(ts_listen).weekday()
 
     # Checking for weekend and getting corresponding bucket
-    if day == 'Friday' or day == 'Saturday' or day == 'Sunday':
+    if day == 4 or day == 5 or day == 6:
         moment = \
         [k for (k, v) in Weekend_MOMENTS.items() if v[0] <= hour <= v[1]][0]
     else:
