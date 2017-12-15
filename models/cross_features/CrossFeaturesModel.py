@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from time import time
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, cross_val_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 
@@ -89,6 +89,22 @@ class CrossFeaturesModel:
         grid = GridSearchCV(self.clf, params, cv=self.cv, verbose=self.verbose)
         grid.fit(self.data, self.target)
         self.best_estimator = grid.best_estimator_
+
+    def cross_val_accuracy(self, verbose=False):
+        """
+        Computes the accuracy over the folds of the cross validation
+        :param verbose: bool | verbose
+        :return: list | list of accuracies
+        """
+        scores = cross_val_score(self.best_estimator,
+                                 self.data, self.target, cv=self.cv)
+        if verbose:
+            print(">>> Accuracy over each fold of the CV :")
+            print(list(scores))
+
+        print(">>> Mean of the accuracy of the model over all folds:")
+        print(np.mean(scores))
+        return scores
 
     def predict(self, x):
         """
