@@ -2,7 +2,7 @@
 # Imports
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 import pandas as pd
-from utils.Pipeline import Pipeline
+# from utils.Pipeline import Pipeline
 from models.model_based.matrix_creation import hit_rate_matrix_popular_items
 from models.neighborhood_based.ItemBasedCF import ItemBasedCF
 from models.cross_validation.ModelTester import ModelTester
@@ -16,7 +16,10 @@ from utils.preprocessing import get_moment_of_day2
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 a = pd.DataFrame()  # to avoid "error message" of not using pandas
 # file = "./descriptive/db_nrows.csv"
-file = "./descriptive/train_sample.csv"
+# file = "./descriptive/train_sample.csv"
+# file = "./descriptive/train_sample02.csv"
+file = "./descriptive/train.csv"
+
 # data_file = "./descriptive/db_nrows.csv"
 # data_file = "./descriptive/train.csv"
 # data_file = "./descriptive/train_sample02.csv"
@@ -31,26 +34,6 @@ file = "./descriptive/train_sample.csv"
 # print(df.shape)
 df = pd.read_csv(file)
 df["moment_of_day"] = df["ts_listen"].apply(get_moment_of_day2)
-print(df.head())
-# =========================================================================
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Do gigant matrix approach
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# df.is_copy = False
-# df = df.reset_index()
-# df["user_time"] = df["user_id"].astype(str)+"_&_"+df["moment_of_day"]
-# df["user_time_id"] = df.index
-# print(df.head())
-# user = "user_time_id"
-# songs = "media_id"
-# y = "is_listened"
-# data = df[[user, songs, y]]
-# print(data.head())
-# matrix = data.pivot_table(index=user,
-#                           columns=songs,
-#                           values=y,
-#                           aggfunc="mean")
-# print(matrix.head())
 # =========================================================================
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Do one ran per time of day approach
@@ -78,35 +61,46 @@ result_test, result_train = parameter_test(k_vals,
 tod_list = ['morning', 'afternoon_evening', 'late_night']
 for tod in tod_list:
     print("\nCurrently on: "+tod)
-    df = df[df["moment_of_day"] == tod]
-    data = df[[user, songs, y]]
+    data = df[df["moment_of_day"] == tod].copy()
+    data = data[[user, songs, y]]
     print(data.head())
-    matrix = hit_rate_matrix_popular_items(data=df)
+    matrix = hit_rate_matrix_popular_items(data=data)
     # Below is the code in case that we want to use Pipeline
     # matrix = data.pivot_table(index=user,
     #                           columns=songs,
     #                           values=y,
     #                           aggfunc="mean")
-    result_test, result_train = parameter_test(k_vals,
-                                               ItemBasedCF,
-                                               ModelTester(),
-                                               lf.mean_squared_error,
-                                               matrix,
-                                               cv_times,
-                                               verbose=True)
+    _, _ = parameter_test(k_vals,
+                          ItemBasedCF,
+                          ModelTester(),
+                          lf.mean_squared_error,
+                          matrix,
+                          cv_times,
+                          verbose=True)
 # =========================================================================
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Run IBCF model
+# Do gigant matrix approach
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# ibcf = ItemBasedCF(k=15, sim_measure=ochiai)
-# ibcf.fit(matrix)
-# print("\nThe prediction for user 44 in the morning is")
-# print(ibcf.predict(user=0, item=876498))
+# df.is_copy = False
+# df = df.reset_index()
+# df["user_time"] = df["user_id"].astype(str)+"_&_"+df["moment_of_day"]
+# df["user_time_id"] = df.index
+# print(df.head())
+# user = "user_time_id"
+# songs = "media_id"
+# y = "is_listened"
+# data = df[[user, songs, y]]
+# print(data.head())
+# matrix = data.pivot_table(index=user,
+#                           columns=songs,
+#                           values=y,
+#                           aggfunc="mean")
+# print(matrix.head())
 # =========================================================================
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Evaluate the model
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# k_vals = [10, 20]
+# k_vals = [25]
 # cv_times = 1
 # result_test, result_train = parameter_test(k_vals,
 #                                            ItemBasedCF,
@@ -115,4 +109,12 @@ for tod in tod_list:
 #                                            matrix,
 #                                            cv_times,
 #                                            verbose=True)
+# =========================================================================
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Run IBCF model
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# ibcf = ItemBasedCF(k=15, sim_measure=ochiai)
+# ibcf.fit(matrix)
+# print("\nThe prediction for user 44 in the morning is")
+# print(ibcf.predict(user=0, item=876498))
 # =========================================================================
