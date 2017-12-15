@@ -126,3 +126,14 @@ class ContextLF:
         top_k = np.array(top_items.nlargest(k, 0).index)
 
         return top_k
+
+    def song_similarity(self, songs):
+        data = self.data
+        data = data[data.media_id.isin(songs)]
+        data = data.drop_duplicates(['media_id'], keep='first')
+        data = data[['media_id', 'genre_id']]
+        data = data.drop_duplicates(['genre_id'], keep='first')
+        if len(data['media_id']) >= 5:
+            return data['media_id']
+        else:
+            return songs
