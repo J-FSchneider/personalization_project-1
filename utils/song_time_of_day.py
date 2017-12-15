@@ -62,7 +62,7 @@ def chisq_test(data, feature1, feature2):
     degrees of freedom and the table of expected values
     """
 
-    chi = pd.crosstab(data[feature1], df[feature2])
+    chi = pd.crosstab(data[feature1], data[feature2])
     val = chi2_contingency(chi, correction=True, lambda_=None)
 
     return chi, val
