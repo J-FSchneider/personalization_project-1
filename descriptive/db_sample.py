@@ -11,13 +11,13 @@ data_file = "train.csv"
 # Create sample
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 data = pd.read_csv(data_file)
-data = data[data["is_listened"] == 1]
+# data = data[data["is_listened"] == 1]  # Needed not to filter
 sample = hit_rate_matrix_popular_items(data)
 print(sample.head())
 songs = list(sample.columns)
-print(len(songs))
 print("The type of the songs")
 print(type(songs))
+print("The number of songs included {:2d}".format(len(songs)))
 users = sample.reset_index()
 users = list(users["user_id"].unique())
 print("The type of the users")
