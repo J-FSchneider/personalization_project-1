@@ -16,7 +16,7 @@ import utils.loss_functions as lf
 # data_file = "./descriptive/train.csv"
 spotify_file = "./descriptive/SpotifyAudioFeatures_clean.csv"
 sample_path = "./descriptive/train_sample.csv"
-data_file = "./descriptive/train_sample.csv"
+data_file = "./descriptive/train_sample02.csv"
 pipe = Pipeline(deezer_path=data_file,
                 spotify_path=spotify_file,
                 sample_path=sample_path,
@@ -51,8 +51,8 @@ print(matrix.head())
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Evaluate the model
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-k_vals = [20, 30]
-cv_times = 2
+k_vals = [5, 10]
+cv_times = 1
 result_test, result_train = parameter_test(k_vals,
                                            ItemBasedCF,
                                            ModelTester(),
