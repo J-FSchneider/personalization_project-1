@@ -27,7 +27,7 @@ class ContextLF:
         self.n = data['user_id'].nunique()
         self.m = data['media_id'].nunique()
         self.context_id = context_id
-        self.context = data[context_id].unique()
+        self.context = np.append(data[context_id].unique(),'no_context')
         self.d = len(self.context)
         self.U = []
         self.V = []
@@ -49,11 +49,11 @@ class ContextLF:
             self.data[self.data['listen_type'] == 1].groupby(['user_id', 'media_id', self.context_id])[self.ratings].mean())
         self.data = self.data.reset_index()
 
-        for i in range(self.d + 1):
+        for i in range(self.d):
 
             if verbose:
                 print('Model for context: '+ str(self.context[i]))
-            if i == self.d:
+            if i == self.d -1:
                 data_sample = self.data
             else:
                 data_sample = self.data[self.data[self.context_id] == self.context[i]]
@@ -77,12 +77,13 @@ class ContextLF:
                 V_new = V * (1 - learning_rate * regularization) + learning_rate * V_update
                 U = U_new
                 V = V_new
-                if verbose:
+                if verbose and i%100 == 0:
                     print('Loss on iteration ' + str(t) + ': ' + str(J))
 
                 # Convergence criteria
                 if ((J1 - J) < converg) and (t > 0):
                     convergence = True
+
                 else:
                     J1 = J
                 t += 1
@@ -92,7 +93,7 @@ class ContextLF:
 
 
 
-    def predict_topk(self, user_id, context=None, k=20):
+    def predict_topk(self, user_id, context='no_context', k=20):
         """
 
         :param user_id: int | specify the user id, for which you would like to make the prediction
@@ -103,7 +104,12 @@ class ContextLF:
         """
 
         # select index of context
-        t = self.context.index(context)
+        try:
+            t = self.context.tolist().index(context)
+        except:
+            print('Context is not a valid context! Try: ' + str(self.context.tolist()))
+            return None
+
 
         # select U and V
         U = self.U[t]
@@ -127,7 +133,7 @@ class ContextLF:
 
         return top_k
 
-    def song_similarity(self, songs):
+    def song_similarity(self, songs, data):
 
         """
         The function takes in a list of recommended songs and outputs a list
@@ -138,7 +144,6 @@ class ContextLF:
         :param songs: list of recommended songs
         :return: list of serendipitous songs
         """
-        data = self.data
         data = data[data.media_id.isin(songs)]
         data = data.drop_duplicates(['media_id'], keep='first')
         data = data[['media_id', 'genre_id']]
