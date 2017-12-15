@@ -106,6 +106,16 @@ class Pipeline:
         parse_track_speechiness_bucket(self.dz_data)
         parse_track_danceability_bucket(self.dz_data)
 
+    def add_few_features(self):
+        """
+        Creates a selected few feature columns
+        :return: None
+        """
+        parse_ts_listen(self.dz_data, drop_tmp=True)
+        parse_moment_of_week(self.dz_data)
+        parse_moment_of_day2(self.dz_data)
+        parse_user_age(self.dz_data)
+
     def describe(self):
         """
         Function to describe the data generated
@@ -146,6 +156,31 @@ class Pipeline:
         self.dz_data = self.dz_data.sample(frac=1).reset_index(drop=True)
         print("Running time: {} seconds".format(int(time() - t0)))
         return self.dz_data
+
+    def make_selected_few(self, columns=None):
+        self.load_data()
+        self.get_keep_media()
+        self.get_keep_users()
+        self.filter_data()
+        self.add_few_features()
+
+        if columns is None:
+            column_selection = ['user_id',
+                                'media_id',
+                                'moment_of_day',
+                                'moment_of_week',
+                                'is_listened']
+
+        else:
+            if not isinstance(columns, (list, np.ndarray)):
+                raise IOError("The parameter 'columns' should be a list or"
+                              "an np.array.")
+            column_selection = columns
+
+        data = self.dz_data
+        data = data[column_selection]
+        self.dz_data_selected = data
+        return data
 
     def make_selected(self, columns=None):
         """

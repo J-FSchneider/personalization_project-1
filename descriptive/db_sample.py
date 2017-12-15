@@ -12,7 +12,11 @@ data_file = "train.csv"
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 data = pd.read_csv(data_file)
 # data = data[data["is_listened"] == 1]  # Needed not to filter
-sample = hit_rate_matrix_popular_items(data)
+# sample = hit_rate_matrix_popular_items(data)
+sample = hit_rate_matrix_popular_items(data=data,
+                                       n_users=4000,
+                                       n_items=500,
+                                       min_rating=30)
 print(sample.head())
 songs = list(sample.columns)
 print("The type of the songs")
@@ -27,8 +31,10 @@ print(len(users))
 mask = (data["user_id"].isin(users)) & (data["media_id"].isin(songs))
 db = data[mask]
 print(db.shape)
-db.to_csv("train_sample.csv")
+db.to_csv("train_sample02.csv")
 print(len(data["user_id"].unique()))
 print(len(db["user_id"].unique()))
+print("\nThe songs in the orginal data set")
 print(len(data["media_id"].unique()))
+print("\nThe songs in the sample")
 print(len(db["media_id"].unique()))
