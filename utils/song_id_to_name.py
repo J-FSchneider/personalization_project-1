@@ -11,11 +11,9 @@ def id_to_name(spotify_data, song_id):
 
     :param spotify_data:pd>DataFrame| Spotify dataset
     :param song_id: list| List of recommended songs
-    :return: List| List of song anmes
+    :return: List| List of song names
     """
-    spotify_data = spotify_data[spotify_data.media_id.isin(songs)]\
+    spotify_data = spotify_data[spotify_data.media_id.isin(song_id)]\
         .drop_duplicates(['media_id'], keep='first')
 
-    spotify_data = spotify_data['spotify_name']
-
-    return list(spotify_data)
+    return list(spotify_data['spotify_name'])
